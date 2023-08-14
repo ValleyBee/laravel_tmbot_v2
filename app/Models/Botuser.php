@@ -290,10 +290,12 @@ class Botuser extends Model
 
             $user->limit_req_num = ($user->limit_req_num - $userLimitNum);
 
+            //            $user->limit_req_num = ($user->limit_req_num - $userLimitNum);
             if ($user->limit_req_num < 0) {
                 $user->limit_req_num = 0;
                 self::changeUserStatus($user->id, UsersStatus::OUT_OF_LIMIT);
             }
+
             // ['status' => $userStatus->value]
             $user->update();
         } catch (QueryException $e) {

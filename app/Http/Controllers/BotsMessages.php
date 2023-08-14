@@ -84,7 +84,7 @@ class BotsMessages extends Controller
 
 
 //        echo date("d/m/Y H:i:s") . " " . "there are no unsent messages, result is null \n";
-        Log::info('botsmessages,there are no unsent messages, result is null');
+//        Log::info('botsmessages,there are no unsent messages, result is null');
 //        Storage::append('botsmessages.log', date('H:i:s') . "there are no unsent messages, result is null");
         Log::channel('stderr')->info("botsmessages,there are no unsent messages, result is null");
         Log::channel('stderr')->info("botsmessages runner finished");
@@ -359,7 +359,7 @@ class BotsMessages extends Controller
             case ("OUT_OF_LIMIT"):
 
 //                echo date("d/m/Y H:i:s") . " " . "STATUS, USER IS AUTHORIZED OR OUT_OF_LIMIT";
-            Log::info("BotsMessages,STATUS, USER IS AUTHORIZED OR OUT_OF_LIMIT by -> switch UsersStatus::cases");
+                Log::info("BotsMessages,STATUS, USER IS AUTHORIZED OR OUT_OF_LIMIT by -> switch UsersStatus::cases");
 //            Storage::append('myapp.log', date('H:i:s') . "STATUS, USER IS AUTHORIZED OR OUT_OF_LIMIT");
                 // print_r($this->stdClassUser);
 
@@ -402,9 +402,13 @@ class BotsMessages extends Controller
             case ("DELAY"):
             case ("NODELAY"):
                 $instanceName->stdClassMsg->reply_from_ai = $this->botMessageModel->getLastReplyById($instanceName->stdClassMsg->user_id);
+
+                /** cut reply to 128 characters */
+                $instanceName->stdClassMsg->reply_from_ai = substr($instanceName->stdClassMsg->reply_from_ai, 0, 128);
+
                 $this->aiBot->storeQuestionAi($instanceName->stdClassMsg);
-            Log::info("BotsMessages,Message status delay and nodelay add in database, by -> storeQuestionAi");
-                (string)$msg_to_user = "\u{2611}ID:".$instanceName->stdClassMsg->message_id." ".
+                Log::info("BotsMessages,Message status delay and nodelay add in database, by -> storeQuestionAi");
+                (string)$msg_to_user = "\u{2611}ID:" . $instanceName->stdClassMsg->message_id . " " .
                 config()->get('botsmanagerconf.' . UsersMenu::cases()[$instanceName->stdClassUser->lang]->name . '.INFO.msg_accept')
                     ?? "\xE2\x9A\xA0Something went wrong,try again in a while...";
                 $this->botUsersController
@@ -414,7 +418,7 @@ class BotsMessages extends Controller
                         null,
                         null
                     );
-            Log::info("BotsMessages,Message INFO.msg_accept sent to tm users, by -> sendMessageToUserTmbot");
+                Log::info("BotsMessages,Message INFO.msg_accept sent to tm users, by -> sendMessageToUserTmbot");
 
                 break;
             case ("REPLY"):
@@ -424,7 +428,9 @@ class BotsMessages extends Controller
                     Log::info("BotsMessages,Send answer to tm users, by -> sendAnswerToUserTmbot");
                     $this->botMessageModel->setStatusMessage($instanceName->stdClassMsg->id, MessageStatus::DONE);
                     Log::info("BotsMessages,Set status DONE message, by -> >setStatusMessage");
-                    (int)$countSymbols = mb_strlen($instanceName->stdClassMsg->content);
+
+//                    (int)$countSymbols = mb_strlen($instanceName->stdClassMsg->content);
+                    (int)$countSymbols = 1;
                     $this->botUserModel->setUserLimit($instanceName->stdClassUser->id, $countSymbols);
 
 //                    $this->botMessageModel->setMsgDoneWithReplay($instanceName->stdClassMsg->id, $answerFrom);

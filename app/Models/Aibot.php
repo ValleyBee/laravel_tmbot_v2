@@ -74,7 +74,7 @@ class Aibot extends Model
     ];
 
 
-    // protected ?AiModelThree $aiModelThree = null;
+// protected ?AiModelThree $aiModelThree = null;
 
 //    protected string $modelType = 'gpt-3.5-turbo';
 //    protected float $temperature = 0.4;
@@ -82,11 +82,11 @@ class Aibot extends Model
 //    protected string $user = '';
 //    protected int $n = 1;
 //    protected string $stop = 'None';
-    //'prompt' => 'Say this is a test',
+//    'prompt' => 'Say this is a test',
 
 
-    // protected string $base_uri = 'https://api.openai.com/v1/chat/completions';
-    // protected string $message = '';
+// protected string $base_uri = 'https://api.openai.com/v1/chat/completions';
+// protected string $message = '';
 //    protected string $roleAI = '';
 //    protected string $roleMessage = '';
 //    public array $answerFrom;
