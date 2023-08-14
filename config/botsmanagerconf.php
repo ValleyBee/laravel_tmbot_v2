@@ -249,6 +249,18 @@ return [
         'resize_keyboard' => true,
         'input_field_placeholder' => 'Выберете язык'
     ],
+    'REPLYMARKUP_MENU_INLINE' => [
+        'inline_keyboard' => [
+
+            [
+                ['text' => 'PhD', 'callback_data' => 'k=1'],
+                ['text' => 'Engineer', 'callback_data' => 'k=2'],
+                ['text' => 'Pastor', 'callback_data' => 'k=3'],
+            ],
+
+
+        ],
+    ],
 
 
     'REPLYMARKUP_MENU_LANG' => [

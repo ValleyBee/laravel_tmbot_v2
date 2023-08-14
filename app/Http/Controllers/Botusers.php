@@ -196,8 +196,11 @@ class Botusers extends Controller
             ];
             Telegram::setConfig($par);
 */
+
+
+
             $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates(['offset' => $getLastRecordUpdate_id->update_id]);
-            // $res = $this->telegram->bot($tmBotModel)->getUpdates();
+//            $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates();
             Log::info("Botusers,RESPONSE FROM TM OK");
         } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
             Log::alert("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
@@ -222,11 +225,21 @@ class Botusers extends Controller
         for ($y = $cnt; $y >= 0; $y--) {
 
             if (isset($responseFromTmbot[$cnt]['callback_query'])) {
-                // echo ($responseFromTmbot[$cnt]['callback_query']['from']['id']);
-                // echo ($responseFromTmbot[$cnt]['callback_query']['data']);
+                $this->stdClassMsg->model_type = $responseFromTmbot[$cnt]['callback_query']['data'];
+//                echo ($cnt);
+//                echo "\n";
+//                echo $responseFromTmbot[$cnt]['callback_query']['id'];
+//                echo "\n";
+//                 echo ($responseFromTmbot[$cnt]['callback_query']['from']['id']);
+//                echo "\n";
+//                 echo ($responseFromTmbot[$cnt]['callback_query']['data']);
+//                echo "\n";
                 // 	if ($responseFromTmbot[$cnt]['callback_query']['data'] == 'test_2') {
                 // 	echo "вы выюрали русский якыз!";
                 // }
+
+                //                var_dump($responseFromTmbot[$cnt]['callback_query']);
+
                 continue;
             }
             if (isset($responseFromTmbot[$cnt]['my_chat_member'])) {

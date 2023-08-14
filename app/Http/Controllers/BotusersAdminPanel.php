@@ -389,7 +389,7 @@ class BotusersAdminPanel extends Botusers
 //            'botsmanagerconf.' . UsersMenu::cases()[$user->lang]->name . '.REPLYMARKUP_MENU_SECOND');
 
         (array) $menu =config()->get(
-            'botsmanagerconf.' . 'REPLYMARKUP_MENU_SECOND');
+            'botsmanagerconf.' . 'REPLYMARKUP_MENU_INLINE');
 
 //        dd($menu);
         parent::sendMessageToUserTmbot(
