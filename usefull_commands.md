@@ -50,3 +50,6 @@ That’s it! The cache is now cleared, and all keys have been removed.
 
 # MYSQL
 mysql -u root -p -e "show open tables LIKE 'botmessages';"
+
+
+ sudo chmod -R g+w tmbot
