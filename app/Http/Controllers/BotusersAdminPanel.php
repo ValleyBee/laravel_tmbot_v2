@@ -385,9 +385,13 @@ class BotusersAdminPanel extends Botusers
         (string)$msg_to_user = config()->get(
             'botsmanagerconf.' . UsersMenu::cases()[$user->lang]->name . '.NEWUSER.auth');
 
+//        (array) $menu =config()->get(
+//            'botsmanagerconf.' . UsersMenu::cases()[$user->lang]->name . '.REPLYMARKUP_MENU_SECOND');
+
         (array) $menu =config()->get(
-            'botsmanagerconf.' . UsersMenu::cases()[$user->lang]->name . '.REPLYMARKUP_MENU_SECOND');
-//dd($menu);
+            'botsmanagerconf.' . 'REPLYMARKUP_MENU_SECOND');
+
+//        dd($menu);
         parent::sendMessageToUserTmbot(
             $user->botuser_id,
             'new menu',

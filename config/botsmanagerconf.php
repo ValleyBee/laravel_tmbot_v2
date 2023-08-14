@@ -74,7 +74,7 @@ return [
             'resize_keyboard' => true,
             'input_field_placeholder' => 'make your choice 1,2...'
         ],
-    ],
+    ], # end ENG
 
     'UA' => [
         'MENU' =>
@@ -150,7 +150,7 @@ return [
         ],
 
 
-    ],
+    ], #end UA
 
     'RU' => [
         'MENU' => [
@@ -223,7 +223,8 @@ return [
             'resize_keyboard' => true,
             'input_field_placeholder' => 'Выберите 1,2...'
         ],
-    ],
+    ], # end RUS
+
     'REPLYMARKUP_MENU_SECOND' => [
         'keyboard' => [
             [
