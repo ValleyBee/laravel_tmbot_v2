@@ -18,7 +18,7 @@ return [
 
         ],
         'INFO' => [
-            'msg_accept' => "Message has been queued,wait for the response",
+            'msg_accept' => "Message has been queued,wait for the response.",
             'msg_sent' => "The answer is being prepared, please wait...",
             'limit_have' => "\u{2714}Your limit is \u{1F3AB}",
             'limit_out' => "\u{26A0}You have reached limit of the quick answers.",
@@ -93,7 +93,7 @@ return [
 
         ],
         'INFO' => [
-            'msg_accept' => "Повідомлення принято до черги,очікуйте відповідь",
+            'msg_accept' => "Повідомлення принято до черги,очікуйте відповідь.",
             'msg_sent' => "Відповідь вже готується,очікуйте...",
             'limit_have' => "\u{2714}Ваш залишок ліміту \u{1F3AB}",
             'limit_out' => "\u{26A0}Ваш ліміт на швидкі запити вичерпано.",
@@ -168,7 +168,7 @@ return [
 
         ],
         'INFO' => [
-            'msg_accept' => "Сообщение принято в очередь,ожидайте ответа",
+            'msg_accept' => "Сообщение принято в очередь,ожидайте ответа.",
             'msg_sent' => "Ответ уже готовится,ожидайте...",
             'limit_have' => "\u{2714}Ваши остаток лимита \u{1F3AB}",
             'limit_out' => "\u{26A0}Ваши лимит на количество быстрых запросов, исчерпан.",
