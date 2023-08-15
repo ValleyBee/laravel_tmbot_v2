@@ -255,7 +255,7 @@ return [
             [
                 ['text' => 'PhD', 'callback_data' => 'k=1'],
                 ['text' => 'Engineer', 'callback_data' => 'k=2'],
-                ['text' => 'Pastor__John ', 'callback_data' => 'k=3'],
+                ['text' => 'Pastor___John ', 'callback_data' => 'k=3'],
             ],
 
 
