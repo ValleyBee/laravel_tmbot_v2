@@ -14,7 +14,7 @@ use App\Models\Botmessages as BotMessageModel;
 //use Illuminate\Support\Carbon;
 use Telegram\Bot\Laravel\Facades\Telegram;
 
-// use Telegram\Bot\Api as TelegramApi;
+
 // use Telegram\Bot\FileUpload\InputFile;
 // use Illuminate\Support\Str;
 
@@ -32,6 +32,7 @@ use Telegram\Bot\Objects\Stickers;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\StarterMethods;
+use function Symfony\Component\Translation\t;
 
 // use Illuminate\Http\Request;
 
@@ -198,7 +199,6 @@ class Botusers extends Controller
 */
 
 
-
             $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates(['offset' => $getLastRecordUpdate_id->update_id]);
 //            $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates();
             Log::info("Botusers,RESPONSE FROM TM OK");
@@ -225,23 +225,53 @@ class Botusers extends Controller
         for ($y = $cnt; $y >= 0; $y--) {
 
             if (isset($responseFromTmbot[$cnt]['callback_query'])) {
-                $this->stdClassMsg->model_type = $responseFromTmbot[$cnt]['callback_query']['data'];
-//                echo ($cnt);
-//                echo "\n";
-//                echo $responseFromTmbot[$cnt]['callback_query']['id'];
-//                echo "\n";
-//                 echo ($responseFromTmbot[$cnt]['callback_query']['from']['id']);
-//                echo "\n";
-//                 echo ($responseFromTmbot[$cnt]['callback_query']['data']);
-//                echo "\n";
-                // 	if ($responseFromTmbot[$cnt]['callback_query']['data'] == 'test_2') {
-                // 	echo "вы выюрали русский якыз!";
-                // }
+                $responseCallBack = false;
+                $callback_query = new stdClass();
 
-                //                var_dump($responseFromTmbot[$cnt]['callback_query']);
+                $callback_query->update_id = ($responseFromTmbot[$cnt]['update_id'] ?? 0);
+                $callback_query->message_id = ($responseFromTmbot[$cnt]['callback_query']['message']['message_id'] ?? 0);
+                $callback_query->botuser_id = ($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
+                $callback_query->first_name = ($responseFromTmbot[$cnt]['callback_query']['from']['first_name'] ?? '');
+                $callback_query->last_name = ($responseFromTmbot[$cnt]['callback_query']['from']['last_name'] ?? '');
+                $callback_query->content = ($responseFromTmbot[$cnt]['callback_query']['data'] ?? '');
 
+                $this->stdClassMsg->model_type = (int)$callback_query->content;
+
+                $userFound = $this->botUserModel->findByBotuser_id($callback_query->botuser_id);
+                (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$userFound->lang]->name . '.INFO.roll_change');
+//
+                try {
+                    $responseCallBack = $this->telegram->bot($tmBotModel)->answerCallbackQuery(
+                        [
+                            'callback_query_id' => $responseFromTmbot[$cnt]['callback_query']['id'],
+                            'text' => $msg_to_user,
+                            'show_alert' => true,
+                        ]);
+                    $this->telegram->bot($tmBotModel)->editMessageReplyMarkup(
+                        ['chat_id' => 909149522,
+                        'message_id' => $callback_query->message_id,
+                            null,
+                            null,
+                        ]);
+
+                } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
+                    Log::alert("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
+                }
+                if ($responseCallBack) {
+
+                    $userFound = $this->botUserModel->findByBotuser_id($callback_query->botuser_id);
+                    $this->botUserModel->setUserRollModel($userFound->id, (int)$this->stdClassMsg->model_type);
+                    $messageIsExist = $this->botMessageModel->findIsMsgExistByMsg_id($callback_query->message_id);
+                    if (!$messageIsExist) {
+                        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($userFound->id, $callback_query);
+                        $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::MENU);
+
+                    }
+                }
+//exit();
                 continue;
             }
+
             if (isset($responseFromTmbot[$cnt]['my_chat_member'])) {
                 //            update_id: 785629015
                 //    my_chat_member: array:5 [▼
@@ -406,7 +436,7 @@ class Botusers extends Controller
                     break;
                 case ("OUT_OF_LIMIT"):
                     Log::info("Botusers, STATUS OUT_OF_LIMIT by -> switch UsersStatus::cases");
-                    //                    echo date("d/m/Y H:i:s") . " STATUS, OUT_OF_LIMIT\n";
+                    echo date("d/m/Y H:i:s") . " STATUS, OUT_OF_LIMIT\n";
                     if (!$messageIsExist) {
                         $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->stdClassMsg);
                         $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::DELAY);
@@ -514,7 +544,7 @@ class Botusers extends Controller
             'reply_to_message_id' => $reply_to_message_id,
             'text' => $message,
             'allow_sending_without_reply' => true,
-            'parse_mode' => 'html'
+            'parse_mode' => 'Markdown'
 
         ];
         if ($replyMarkup !== null) {

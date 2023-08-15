@@ -292,6 +292,14 @@ class UserProfile extends Botusers
 
                 $sendMsgWithoutMenuToUser($msg_to_user);
                 break;
+            case ("ROLL_AI"):
+                $lang_name = UsersMenu::cases()[$this->lang]->name ?? UsersMenu::ENG->name;
+                (string)$msg_to_user = config()->get('botsmanagerconf.' . $lang_name . '.INFO.ai_questions');
+                (array)$menu = self::keyboardRollMenuTmbot($lang_name);
+                $sendMsgWithMenuToUser($msg_to_user, $menu);
+                break;
+
+
             default:
                 Log::alert('something went wrong switch, by -> UserProfile ->setUpUserSelectMenu');
 //                echo "<font color='red'>" . "Something went wrong with SWITCH CASES" . "</font>";
@@ -315,6 +323,10 @@ class UserProfile extends Botusers
     protected function keyboardSubMenuTmbot(string $name_lang): array
     {
         return config()->get('botsmanagerconf.' . $name_lang . '.REPLYMARKUP_MENU_SUB_ONE');
+    }
+    protected function keyboardRollMenuTmbot(string $name_lang): array
+    {
+        return config()->get('botsmanagerconf.' . $name_lang . '.REPLYMARKUP_MENU_INLINE');
     }
 
     protected function keyboardLangMenuTmbot(): array

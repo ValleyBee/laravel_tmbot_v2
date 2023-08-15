@@ -20,7 +20,6 @@ use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Database\QueryException;
 use App\Enums\Messages\Status as MessageStatus;
 use App\Enums\Users\Status as UsersStatus;
-
 use App\Enums\Users\UsersMenu;
 use stdClass;
 
@@ -423,6 +422,7 @@ class BotusersAdminPanel extends Botusers
 
     public function sendMessage()
     {
+
 
 
         return view('message');

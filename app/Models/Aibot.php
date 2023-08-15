@@ -340,6 +340,15 @@ class Aibot extends Model
     } # END Client
 
 
+
+
+
+
+
+
+
+
+
     public function getQuestionAi_setStatusBusy(AiBot $instanceName, MessageStatus $status): stdClass|null
     {
         $result = null;

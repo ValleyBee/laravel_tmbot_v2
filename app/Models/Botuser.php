@@ -341,6 +341,27 @@ class Botuser extends Model
         }
     }
 
+    public function setUserRollModel(int $id, int $rollModel): void
+    {
+
+        if ($this->botUserModel === null) {
+            $this->botUserModel = app('botuser');
+            // $this->botUserModel = resolve(Botuser::class);
+        }
+        try {
+            $user = $this->botUserModel->find($id);
+            if (is_null($user)) {
+                echo date("d/m/Y H:i:s") . "USER NOT FOUND error message \n";
+            }
+
+            $user->model_type = $rollModel;
+            // ['status' => $userStatus->value]
+            $user->update();
+        } catch (QueryException $e) {
+            echo $e;
+        }
+    }
+
 
 
 
