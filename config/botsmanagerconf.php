@@ -253,9 +253,9 @@ return [
         'inline_keyboard' => [
 
             [
-                ['text' => 'PhD', 'callback_data' => 'k=1'],
-                ['text' => 'Engineer', 'callback_data' => 'k=2'],
-                ['text' => 'Pastor', 'callback_data' => 'k=3'],
+                ['text' => 'PhD', 'callback_data' => 'k=10'],
+                ['text' => 'Engineer', 'callback_data' => 'k=20'],
+                ['text' => 'Pastor', 'callback_data' => 'k=33'],
             ],
 
 
