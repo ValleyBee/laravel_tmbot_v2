@@ -4,6 +4,9 @@ namespace App\Models;
 
 use App\Enums\Messages\Status as MessageStatus;
 use App\Http\Controllers\BotsMessages;
+
+use App\Http\Helpers\ResponseMessages;
+use App\Http\Helpers\ResponseCallBackQueryMessages;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Model;
@@ -374,7 +377,7 @@ class Botmessages extends Model
     }
 
 
-    public function storeOnlyNewTmMesssages(int $user_id, stdClass $responseFields): int
+    public function storeOnlyNewTmMesssages(int $user_id, ResponseMessages $responseFields): int
     {
 
         if ($this->messageModel == null) {

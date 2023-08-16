@@ -14,8 +14,7 @@ use stdClass;
 class UserProfile extends Botusers
 {
     protected int $id;
-//    protected $created_at;
-//    protected $update_at;
+
     protected string $botuser_id;
     protected string $update_id;
     protected int $status_usr;
