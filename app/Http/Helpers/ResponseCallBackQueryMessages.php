@@ -2,7 +2,10 @@
 
 namespace App\Http\Helpers;
 
+use App\Enums\Messages\Status as MessageStatus;
+use App\Models\Botuser as BotUserModel;
 use Illuminate\Support\Collection;
+use stdClass;
 use Telegram\Bot\Objects\ResponseObject;
 
 class ResponseCallBackQueryMessages
@@ -12,6 +15,7 @@ class ResponseCallBackQueryMessages
 //   protected $guarded = [];
 
     public int $id;
+    public int $user_id;
     public string $botuser_id;
     public string $update_id;
     public int $message_id;
@@ -20,7 +24,7 @@ class ResponseCallBackQueryMessages
     public string $content;
 
     protected function __construct(
-        int $id,
+        int    $id,
         string $botuser_id,
         string $update_id,
         int    $message_id,
@@ -53,8 +57,21 @@ class ResponseCallBackQueryMessages
             $responseFromTmbot['callback_query']['data'] ?? '',
 
         );
-
     }
 
+    public function handlerCallBackQueryMessages(int $user_id): void
+    {
+        $this->user_id = $user_id;
+        $botMessageModel = app('botmessage');
+        $botUserModel = app('botuser');
+        $botUserModel->setUserRollModel($this->user_id, (int)$this->content);
+        $messageIsExist = $botMessageModel->findIsMsgExistByMsg_id($this->message_id);
+        if (!$messageIsExist) {
+            $msg_pk_id = $botMessageModel->storeOnlyNewTmMesssages($this->user_id, $this);
+            $botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::MENU);
+        }
+
+
+    }
 
 }

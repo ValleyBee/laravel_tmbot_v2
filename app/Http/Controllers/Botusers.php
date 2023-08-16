@@ -19,6 +19,7 @@ use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Objects\ResponseObject;
 use stdClass;
+
 //use App\Jobs\SendQuestionAiDelay;
 
 
@@ -46,8 +47,8 @@ class Botusers extends Controller
     protected ?NewUsers $newUsers = null;
     protected ?stdClass $stdClassMsg = null;
     protected ?ResponseMessages $responseMessages = null;
-    protected  ?ResponseCallBackQueryMessages $responseCallBackQueryMessages = null;
-   protected  ResponseObject $responseFromTmbot;
+    protected ?ResponseCallBackQueryMessages $responseCallBackQueryMessages = null;
+    protected ResponseObject $responseFromTmbot;
 
     protected ?stdClass $stdClassUser = null;
 
@@ -141,20 +142,14 @@ class Botusers extends Controller
 //        Storage::append('myapp.log', date('H:i:s') . "botusers started");
 //        echo " START ".time()."\n";
 
-//usleep(2 *1000);
-        (string)$tmBotModel = '';
         (array)$responseFromTmbot = [];
-        // (array)$responseFields = [];
+
 
 
         if ($this->botUserModel == null) {
 //			echo "<font color='blue'>" . "NEW INSTANCE botUserModel " . "</font>";
             $this->botUserModel = app('botuser');
-            // $this->botUserModel = resolve(BotUserModel::class);
-
-
-            // $this->botUserModel = resolve(BotUserModel::class);
-        }
+              }
 
         if ($this->stdClassMsg == null) {
             $this->stdClassMsg = new stdClass;
@@ -201,51 +196,38 @@ class Botusers extends Controller
             Log::alert("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
 //            $responseFromTmbot = null;
         }
-
         echo "\n";
-
 
         // self::createMenuTmbot();
         // self::removeMenuTmbot();
 
-
 //         dd(config()->get('botsmanagerconf.ENG.REPLYMARKUP_MENU_SUB_ONE'));
-
-//        $cnt = count($responseFromTmbot) - 1; # old way
-        $cnt = $responseFromTmbot[0]->count()-1;
+        $cnt = count($responseFromTmbot) - 1; # old way
+//        $cnt = $responseFromTmbot[0]->count()-1;
         Log::info('Botusers, total messages from updates' . $cnt);
-        echo date("d/m/Y H:i:s") . " " . "total messages : " . count($responseFromTmbot);
-
+//        echo date("d/m/Y H:i:s") . " " . "total messages count: " . $cnt;
         echo "\n";
 
-
         for ($y = $cnt; $y >= 0; $y--) {
-
-            echo ($responseFromTmbot[$cnt]->__isset('callback_query'));
-            echo "\n";
             if ($responseFromTmbot[$cnt]->__isset('callback_query')) {
 //            (isset($responseFromTmbot[$cnt]['callback_query'])) # old way
-
-                $responseCallBack = false;
+                $answerCallbackQuery = false;
+                $userFound = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
                 $this->responseCallBackQueryMessages = ResponseCallBackQueryMessages::ResponseCallBackQueryMessages($responseFromTmbot[$cnt]->collect());
-/**
-                $callback_query = new stdClass();
-                $callback_query->id = ($responseFromTmbot[$cnt]['callback_query']['id'] ?? 0);
-                $callback_query->update_id = ($responseFromTmbot[$cnt]['update_id'] ?? 0);
-                $callback_query->message_id = ($responseFromTmbot[$cnt]['callback_query']['message']['message_id'] ?? 0);
-                $callback_query->botuser_id = ($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
-                $callback_query->first_name = ($responseFromTmbot[$cnt]['callback_query']['from']['first_name'] ?? '');
-                $callback_query->last_name = ($responseFromTmbot[$cnt]['callback_query']['from']['last_name'] ?? '');
-                $callback_query->content = ($responseFromTmbot[$cnt]['callback_query']['data'] ?? '');
-
-                $this->stdClassMsg->model_type = (int)$callback_query->content;
-*/
-                $userFound = $this->botUserModel->findByBotuser_id($this->responseCallBackQueryMessages->botuser_id);
-
+                /**
+                 * $callback_query = new stdClass();
+                 * $callback_query->id = ($responseFromTmbot[$cnt]['callback_query']['id'] ?? 0);
+                 * $callback_query->update_id = ($responseFromTmbot[$cnt]['update_id'] ?? 0);
+                 * $callback_query->message_id = ($responseFromTmbot[$cnt]['callback_query']['message']['message_id'] ?? 0);
+                 * $callback_query->botuser_id = ($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
+                 * $callback_query->first_name = ($responseFromTmbot[$cnt]['callback_query']['from']['first_name'] ?? '');
+                 * $callback_query->last_name = ($responseFromTmbot[$cnt]['callback_query']['from']['last_name'] ?? '');
+                 * $callback_query->content = ($responseFromTmbot[$cnt]['callback_query']['data'] ?? '');
+                 * $this->stdClassMsg->model_type = (int)$callback_query->content;
+                 */
                 (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$userFound->lang]->name . '.INFO.roll_change');
-//
                 try {
-                    $responseCallBack = $this->telegram->bot($tmBotModel)->answerCallbackQuery(
+                    $answerCallbackQuery = $this->telegram->bot($tmBotModel)->answerCallbackQuery(
                         [
                             'callback_query_id' => $this->responseCallBackQueryMessages->id,
                             'text' => $msg_to_user,
@@ -253,7 +235,7 @@ class Botusers extends Controller
                         ]);
                     $this->telegram->bot($tmBotModel)->editMessageReplyMarkup(
                         ['chat_id' => $this->responseCallBackQueryMessages->botuser_id,
-                        'message_id' => $this->responseCallBackQueryMessages->message_id,
+                            'message_id' => $this->responseCallBackQueryMessages->message_id,
                             null,
                             null,
                         ]);
@@ -261,20 +243,12 @@ class Botusers extends Controller
                 } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
                     Log::alert("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
                 }
-                if ($responseCallBack) {
-
-                    $userFound = $this->botUserModel->findByBotuser_id($this->responseCallBackQueryMessages->botuser_id);
-                    $this->botUserModel->setUserRollModel($userFound->id, (int)$this->responseCallBackQueryMessages->content);
-                    $messageIsExist = $this->botMessageModel->findIsMsgExistByMsg_id($this->responseCallBackQueryMessages->message_id);
-                    if (!$messageIsExist) {
-                        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($userFound->id, $this->responseCallBackQueryMessages);
-                        $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::MENU);
-
-                    }
+                if ($answerCallbackQuery) {
+                    $this->responseCallBackQueryMessages->handlerCallBackQueryMessages($userFound->id);
                 }
 //exit();
                 continue;
-            }
+            } # end if __isset callback_query
 
             if (isset($responseFromTmbot[$cnt]['my_chat_member'])) {
                 //            update_id: 785629015
@@ -296,24 +270,20 @@ class Botusers extends Controller
                 $msg = 'edited_message';
             }
 
-
-
-
             $this->responseMessages = ResponseMessages::ResponseMessages($responseFromTmbot[$cnt]->collect());
 //
 //            $this->stdClassMsg =
             //            (object)$this->stdClassMsg = (object)(array)$this->messages;
 
-/**
-            $this->stdClassMsg->update_id = ($responseFromTmbot[$cnt]['update_id'] ?? 0);
-            $this->stdClassMsg->message_id = ($responseFromTmbot[$cnt][$msg]['message_id'] ?? 0);
-            $this->stdClassMsg->botuser_id = ($responseFromTmbot[$cnt][$msg]['from']['id'] ?? 0);
-            $this->stdClassMsg->first_name = ($responseFromTmbot[$cnt][$msg]['from']['first_name'] ?? '');
-            $this->stdClassMsg->last_name = ($responseFromTmbot[$cnt][$msg]['from']['last_name'] ?? '');
-            $this->stdClassMsg->content = ($responseFromTmbot[$cnt][$msg]['text'] ?? '');
-*/
+            /**
+             * $this->stdClassMsg->update_id = ($responseFromTmbot[$cnt]['update_id'] ?? 0);
+             * $this->stdClassMsg->message_id = ($responseFromTmbot[$cnt][$msg]['message_id'] ?? 0);
+             * $this->stdClassMsg->botuser_id = ($responseFromTmbot[$cnt][$msg]['from']['id'] ?? 0);
+             * $this->stdClassMsg->first_name = ($responseFromTmbot[$cnt][$msg]['from']['first_name'] ?? '');
+             * $this->stdClassMsg->last_name = ($responseFromTmbot[$cnt][$msg]['from']['last_name'] ?? '');
+             * $this->stdClassMsg->content = ($responseFromTmbot[$cnt][$msg]['text'] ?? '');
+             */
 //            dd($this->stdClassMsg);
-
 
 
 //			 dd($this->stdClassMsg);

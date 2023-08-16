@@ -6,6 +6,7 @@ use App\Enums\Messages\Status as MessageStatus;
 use App\Enums\Users\Status as UsersStatus;
 use App\Enums\Users\UsersMenu;
 use Illuminate\Support\Facades\Log;
+use App\Http\Helpers\ResponseMessages;
 use stdClass;
 
 
@@ -59,7 +60,7 @@ class UserProfile extends Botusers
         $this->msg_pk_id = $msg_pk_id;
     }
 
-    public static function UserProfile(stdClass $stdClassUser, stdClass $stdClassMsg, ?int $msg_pk_id = 0): UserProfile
+    public static function UserProfile(stdClass $stdClassUser, ResponseMessages $stdClassMsg, ?int $msg_pk_id = 0): UserProfile
     {
         return new UserProfile(
             $stdClassUser->id,

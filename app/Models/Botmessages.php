@@ -377,7 +377,7 @@ class Botmessages extends Model
     }
 
 
-    public function storeOnlyNewTmMesssages(int $user_id, ResponseMessages $responseFields): int
+    public function storeOnlyNewTmMesssages(int $user_id, ResponseMessages|ResponseCallBackQueryMessages $responseFields): int
     {
 
         if ($this->messageModel == null) {
