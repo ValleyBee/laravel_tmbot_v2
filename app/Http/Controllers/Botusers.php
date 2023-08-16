@@ -230,7 +230,7 @@ class Botusers extends Controller
                  * $callback_query->content = ($responseFromTmbot[$cnt]['callback_query']['data'] ?? '');
                  * $this->stdClassMsg->model_type = (int)$callback_query->content;
                  */
-                (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$this->stdClassUser->lang]->name . '.INFO.roll_change');
+                (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$this->stdClassUser->lang]->name . '.INFO.role_change');
                 try {
                     $answerCallbackQuery = $this->telegram->bot($tmBotModel)->answerCallbackQuery(
                         [

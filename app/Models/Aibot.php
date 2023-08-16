@@ -72,6 +72,18 @@ class Aibot extends Model
                 "role" => "user", "content" => "Famous people born on August"],
         ],
     ];
+/**
+[
+['text' => 'Doctor of Philosophy in Psychology', 'callback_data' => 1],
+],
+[
+['text' => 'Master of Science in Engineering', 'callback_data' => 2],
+],
+[
+['text' => 'Doctor of Theology in the Christian religion', 'callback_data' => 3],
+],
+ */
+
 
 
 // protected ?AiModelThree $aiModelThree = null;
@@ -150,9 +162,12 @@ class Aibot extends Model
         $updateClientData = function (array $param) use (&$modelData, $stdClassMsg): array {
 
             $modelData['messages'][0] = [
-                "role" => "assistant", 'content' => $stdClassMsg->reply_from_ai ?? 'you are physicist with PhD'
+                "role" => "system", 'content' => ''
             ];
             $modelData['messages'][1] = [
+                "role" => "assistant", 'content' => $stdClassMsg->reply_from_ai ?? ''
+            ];
+            $modelData['messages'][2] = [
                 "role" => "user", 'content' => $stdClassMsg->content
             ];
 
@@ -164,15 +179,21 @@ class Aibot extends Model
             return $modelData;
         };
 
+        (object)$stdClassUser = $this->botUserModel->getUser($stdClassMsg->user_id);
 
         switch (MessageStatus::cases()[$stdClassMsg->status_msg ?? 0]->name) {
             case ("DELAY"):
 //                ${'class_aitbot' . $stdClassMsg->botuser_id}
 //                ${'client' . $account} = OpenAI::client(config()->get('openai.payed_response.api_key'), config()->get('openai.payed_response.organization'));
                 ${'client' . $account} = OpenAI::client(config()->get('openai.free_response.api_key'), config()->get('openai.free_response.organization'));
+                $role  = $stdClassUser->model_type;
 
-                ////
-                $updateClientData(['max_tokens' => 2000]);
+                $updateClientData(
+                    [
+                        'max_tokens' => 2000,
+                        'messages'[0]  => 'Doctor of Theology in the Christian religion',
+                    ],
+                );
 
 //                session_start();
                 /*session is started if you don't write this line can't use $_Session  global variable*/
@@ -195,7 +216,13 @@ class Aibot extends Model
                 break;
             case ("NODELAY"):
                 ${'client' . $account} = OpenAI::client(config()->get('openai.payed_response.api_key'), config()->get('openai.payed_response.organization'));
-                $updateClientData(['max_tokens' => 100]);
+                $updateClientData(
+                    [
+                        'max_tokens' => 100,
+                        'messages'[0]  => 'you are physicist with PhD',
+                    ],
+               );
+
                 Log::info('Make config for NODELAY question to AI, by -> MessageStatus::cases');
                 /*
                 $this->openaiclientbot = OpenAI::factory()
@@ -214,7 +241,7 @@ class Aibot extends Model
 
 
         // print_r($this->stdClassUser);
-        (object)$stdClassUser = $this->botUserModel->getUser($stdClassMsg->user_id);
+
         $msg_to_user = "\u{2611}ID:".$stdClassMsg->message_id." ".
         config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.msg_sent')
             ?? "\xE2\x9A\xA0Something went wrong,try again in a while...";
@@ -314,7 +341,7 @@ class Aibot extends Model
 
 */
 
-//dd($modelData->data);
+dd($modelData->data);
 //			$request = $this->openaiclientbot->chat()->create($modelData->data);
         try {
             $response = ${'client' . $account}->chat()->create($modelData);

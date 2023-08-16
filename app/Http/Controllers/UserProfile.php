@@ -294,7 +294,7 @@ class UserProfile extends Botusers
                 break;
             case ("ROLL_AI"):
                 $lang_name = UsersMenu::cases()[$this->lang]->name ?? UsersMenu::ENG->name;
-                (string)$msg_to_user = config()->get('botsmanagerconf.' . $lang_name . '.INFO.ai_questions');
+                (string)$msg_to_user = config()->get('botsmanagerconf.' . $lang_name . '.INFO.assigning_roles');
                 (array)$menu = self::keyboardRollMenuTmbot($lang_name);
                 $sendMsgWithMenuToUser($msg_to_user, $menu);
                 break;
