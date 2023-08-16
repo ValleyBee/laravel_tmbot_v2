@@ -14,6 +14,7 @@ use App\Models\NewUsers;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Facades\Log;
 use Telegram\Bot\BotManager;
+use Telegram\Bot\Commands\CommandHandler;
 use Telegram\Bot\Exceptions\TelegramResponseException;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -189,7 +190,8 @@ class Botusers extends Controller
 
 
             $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates(['offset' => $getLastRecordUpdate_id->update_id]);
-//            $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates();
+
+
             Log::info("Botusers,RESPONSE FROM TM OK");
         } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
             Log::alert("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
@@ -207,7 +209,9 @@ class Botusers extends Controller
 //        echo date("d/m/Y H:i:s") . " " . "total messages count: " . $cnt;
         echo "\n";
 
+
         for ($y = $cnt; $y >= 0; $y--) {
+
 
             if ($responseFromTmbot[$cnt]->__isset('callback_query')) {
 //            (isset($responseFromTmbot[$cnt]['callback_query'])) # old way
@@ -262,7 +266,17 @@ class Botusers extends Controller
                 // }
                 continue;
             }
+
+        # skip bot command
+            if (isset($responseFromTmbot[$cnt]['message']['entities'])
+                ||
+                isset($responseFromTmbot[$cnt]['edited_message']['entities'])) {
+                echo "HAS BOT COMMAND";
+                continue;
+            }
+
             if ($responseFromTmbot[$cnt]->__isset('message') or 'edited_message') {
+
 
                 $this->responseMessages = ResponseMessages::ResponseMessages($responseFromTmbot[$cnt]->collect());
                 $this->stdClassUser = $this->botUserModel->findByBotuser_id($this->responseMessages->botuser_id);
