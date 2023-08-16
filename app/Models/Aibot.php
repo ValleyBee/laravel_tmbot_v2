@@ -161,7 +161,7 @@ class Aibot extends Model
         $updateClientData = function (array $param) use (&$modelData, $stdClassMsg): array {
 
             $modelData['messages'][0] = [
-                "role" => "system", 'content' => 'Doctor of Theology in the Christian religion'
+                "role" => "system", 'content' => 'You are an assistant that speaks like Doctor of Theology in the Christian religion'
             ];
             $modelData['messages'][1] = [
                 "role" => "assistant", 'content' => $stdClassMsg->reply_from_ai ?? ''
