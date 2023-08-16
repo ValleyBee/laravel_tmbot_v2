@@ -86,7 +86,7 @@ class BotsMessages extends Controller
 //        echo date("d/m/Y H:i:s") . " " . "there are no unsent messages, result is null \n";
 //        Log::info('botsmessages,there are no unsent messages, result is null');
 //        Storage::append('botsmessages.log', date('H:i:s') . "there are no unsent messages, result is null");
-        Log::channel('stderr')->info("botsmessages,there are no unsent messages, result is null");
+//        Log::channel('stderr')->info("botsmessages,there are no unsent messages, result is null");
         Log::channel('stderr')->info("botsmessages runner finished");
     }
 
@@ -359,7 +359,7 @@ class BotsMessages extends Controller
             case ("OUT_OF_LIMIT"):
 
 //                echo date("d/m/Y H:i:s") . " " . "STATUS, USER IS AUTHORIZED OR OUT_OF_LIMIT";
-                Log::info("BotsMessages,STATUS, USER IS AUTHORIZED OR OUT_OF_LIMIT by -> switch UsersStatus::cases");
+//                Log::info("BotsMessages,STATUS, USER IS AUTHORIZED OR OUT_OF_LIMIT by -> switch UsersStatus::cases");
 //            Storage::append('myapp.log', date('H:i:s') . "STATUS, USER IS AUTHORIZED OR OUT_OF_LIMIT");
                 // print_r($this->stdClassUser);
 
@@ -404,7 +404,7 @@ class BotsMessages extends Controller
                 $instanceName->stdClassMsg->reply_from_ai = $this->botMessageModel->getLastReplyById($instanceName->stdClassMsg->user_id);
 
                 /** cut reply to 128 characters */
-                $instanceName->stdClassMsg->reply_from_ai = substr($instanceName->stdClassMsg->reply_from_ai, 0, 128);
+                $instanceName->stdClassMsg->reply_from_ai = mb_substr($instanceName->stdClassMsg->reply_from_ai, 0, 128,'UTF-8');
 
                 $this->aiBot->storeQuestionAi($instanceName->stdClassMsg);
                 Log::info("BotsMessages,Message status delay and nodelay add in database, by -> storeQuestionAi");

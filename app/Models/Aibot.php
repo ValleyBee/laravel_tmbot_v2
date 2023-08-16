@@ -72,18 +72,17 @@ class Aibot extends Model
                 "role" => "user", "content" => "Famous people born on August"],
         ],
     ];
-/**
-[
-['text' => 'Doctor of Philosophy in Psychology', 'callback_data' => 1],
-],
-[
-['text' => 'Master of Science in Engineering', 'callback_data' => 2],
-],
-[
-['text' => 'Doctor of Theology in the Christian religion', 'callback_data' => 3],
-],
- */
-
+    /**
+     * [
+     * ['text' => 'Doctor of Philosophy in Psychology', 'callback_data' => 1],
+     * ],
+     * [
+     * ['text' => 'Master of Science in Engineering', 'callback_data' => 2],
+     * ],
+     * [
+     * ['text' => 'Doctor of Theology in the Christian religion', 'callback_data' => 3],
+     * ],
+     */
 
 
 // protected ?AiModelThree $aiModelThree = null;
@@ -162,7 +161,7 @@ class Aibot extends Model
         $updateClientData = function (array $param) use (&$modelData, $stdClassMsg): array {
 
             $modelData['messages'][0] = [
-                "role" => "system", 'content' => ''
+                "role" => "system", 'content' => 'Doctor of Theology in the Christian religion'
             ];
             $modelData['messages'][1] = [
                 "role" => "assistant", 'content' => $stdClassMsg->reply_from_ai ?? ''
@@ -186,12 +185,11 @@ class Aibot extends Model
 //                ${'class_aitbot' . $stdClassMsg->botuser_id}
 //                ${'client' . $account} = OpenAI::client(config()->get('openai.payed_response.api_key'), config()->get('openai.payed_response.organization'));
                 ${'client' . $account} = OpenAI::client(config()->get('openai.free_response.api_key'), config()->get('openai.free_response.organization'));
-                $role  = $stdClassUser->model_type;
-
+                $role = $stdClassUser->model_type;
+//
                 $updateClientData(
                     [
                         'max_tokens' => 2000,
-                        'messages'[0]  => 'Doctor of Theology in the Christian religion',
                     ],
                 );
 
@@ -219,9 +217,9 @@ class Aibot extends Model
                 $updateClientData(
                     [
                         'max_tokens' => 100,
-                        'messages'[0]  => 'you are physicist with PhD',
+                        'messages'[0] => 'you are physicist with PhD',
                     ],
-               );
+                );
 
                 Log::info('Make config for NODELAY question to AI, by -> MessageStatus::cases');
                 /*
@@ -242,7 +240,7 @@ class Aibot extends Model
 
         // print_r($this->stdClassUser);
 
-        $msg_to_user = "\u{2611}ID:".$stdClassMsg->message_id." ".
+        $msg_to_user = "\u{2611}ID:" . $stdClassMsg->message_id . " " .
         config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.msg_sent')
             ?? "\xE2\x9A\xA0Something went wrong,try again in a while...";
         $this->botUsersController
@@ -276,7 +274,8 @@ class Aibot extends Model
         echo $stdClassMsg->content . "\n";
         echo $stdClassMsg->reply_from_ai . "\n";;
         echo "USER_ID :" . $modelData['user'] . "\n";;
-
+//        print_r($modelData->data['messages'][0]);
+        var_dump($modelData);
 
         /********************FAKE RESPONSE*********************/
         // $client = ClientFake::fake([
@@ -341,7 +340,7 @@ class Aibot extends Model
 
 */
 
-dd($modelData->data);
+
 //			$request = $this->openaiclientbot->chat()->create($modelData->data);
         try {
             $response = ${'client' . $account}->chat()->create($modelData);
@@ -365,15 +364,6 @@ dd($modelData->data);
         Log::channel('stderr')->info("clientAiApi finished");
         Log::info("clientAiApi finished");
     } # END Client
-
-
-
-
-
-
-
-
-
 
 
     public function getQuestionAi_setStatusBusy(AiBot $instanceName, MessageStatus $status): stdClass|null
@@ -488,9 +478,7 @@ dd($modelData->data);
 
     public function storeQuestionAi(stdClass $stdClassMsg)
     {
-
-//        dd($stdClassMsg);
-//        dd($responseFields);
+        var_dump($stdClassMsg);
 
         $createFields = array();
         if ($this->aiBot === null) {
@@ -538,7 +526,6 @@ dd($modelData->data);
         $response->duration; // 2.95
         $response->text; // 'Hello, how are you?'
 
-        dd($response);
 
         foreach ($response->segments as $segment) {
             $segment->index; // 0

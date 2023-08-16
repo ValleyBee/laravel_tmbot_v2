@@ -4,13 +4,13 @@ namespace App\Console;
 
 use App\Enums\Messages\Status;
 use App\Enums\Messages\Status as MessageStatus;
-
 use App\Http\Controllers\Botusers;
 use App\Jobs\SendAnswerAiUsers;
 use App\Jobs\SendQuestionNoDelay;
 use App\Jobs\SendQuestionDelay;
 use App\Jobs\TmUpdates;
 
+use App\Models\Aibot;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Models\AiBotClientData;
@@ -35,7 +35,15 @@ class Kernel extends ConsoleKernel
 
 
         })->name('botusers')->withoutOverlapping();
-//
+
+        $schedule->call(function ()  {
+            Aibot::runner(MessageStatus::DELAY,0);
+
+
+        })->name('Aibot')->withoutOverlapping();
+
+
+        //
 //        $schedule->call(function ()  {
 //
 //            $r2 = new BotsMessages();
