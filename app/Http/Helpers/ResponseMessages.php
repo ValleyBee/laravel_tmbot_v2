@@ -41,19 +41,24 @@ class ResponseMessages
     public static function ResponseMessages(Collection $responseFromTmbot)
     {
 
+        $arg = "message";
+
+        # "EDITED MESSAGE";
+        if (isset($responseFromTmbot['edited_message'])) {
+            $arg = 'edited_message';
+echo  "EDITED MESSAGE";
+        }
         return new ResponseMessages(
-            $responseFromTmbot['message']['from']['id'] ?? 0,
+            $responseFromTmbot[$arg]['from']['id'] ?? 0,
             $responseFromTmbot['update_id'] ?? 0,
-            $responseFromTmbot['message']['message_id'] ?? 0,
-            $responseFromTmbot['message']['from']['first_name'] ?? '',
-            $responseFromTmbot['message']['from']['last_name'] ?? '',
-            $responseFromTmbot['message']['text'] ?? ''
+            $responseFromTmbot[$arg]['message_id'] ?? 0,
+            $responseFromTmbot[$arg]['from']['first_name'] ?? '',
+            $responseFromTmbot[$arg]['from']['last_name'] ?? '',
+            $responseFromTmbot[$arg]['text'] ?? ''
 
         );
 
     }
-
-
 
 
 }

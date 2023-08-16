@@ -145,11 +145,10 @@ class Botusers extends Controller
         (array)$responseFromTmbot = [];
 
 
-
         if ($this->botUserModel == null) {
 //			echo "<font color='blue'>" . "NEW INSTANCE botUserModel " . "</font>";
             $this->botUserModel = app('botuser');
-              }
+        }
 
         if ($this->stdClassMsg == null) {
             $this->stdClassMsg = new stdClass;
@@ -209,10 +208,12 @@ class Botusers extends Controller
         echo "\n";
 
         for ($y = $cnt; $y >= 0; $y--) {
+
             if ($responseFromTmbot[$cnt]->__isset('callback_query')) {
 //            (isset($responseFromTmbot[$cnt]['callback_query'])) # old way
+//                $userFound = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
                 $answerCallbackQuery = false;
-                $userFound = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
+                $this->stdClassUser = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
                 $this->responseCallBackQueryMessages = ResponseCallBackQueryMessages::ResponseCallBackQueryMessages($responseFromTmbot[$cnt]->collect());
                 /**
                  * $callback_query = new stdClass();
@@ -225,7 +226,7 @@ class Botusers extends Controller
                  * $callback_query->content = ($responseFromTmbot[$cnt]['callback_query']['data'] ?? '');
                  * $this->stdClassMsg->model_type = (int)$callback_query->content;
                  */
-                (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$userFound->lang]->name . '.INFO.roll_change');
+                (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$this->stdClassUser->lang]->name . '.INFO.roll_change');
                 try {
                     $answerCallbackQuery = $this->telegram->bot($tmBotModel)->answerCallbackQuery(
                         [
@@ -244,11 +245,11 @@ class Botusers extends Controller
                     Log::alert("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
                 }
                 if ($answerCallbackQuery) {
-                    $this->responseCallBackQueryMessages->handlerCallBackQueryMessages($userFound->id);
+                    $this->responseCallBackQueryMessages->handlerCallBackQueryMessages($this->stdClassUser->id);
                 }
-//exit();
+
                 continue;
-            } # end if __isset callback_query
+            } # end if callback_query
 
             if (isset($responseFromTmbot[$cnt]['my_chat_member'])) {
                 //            update_id: 785629015
@@ -261,50 +262,24 @@ class Botusers extends Controller
                 // }
                 continue;
             }
+            if ($responseFromTmbot[$cnt]->__isset('message') or 'edited_message') {
 
+                $this->responseMessages = ResponseMessages::ResponseMessages($responseFromTmbot[$cnt]->collect());
+                $this->stdClassUser = $this->botUserModel->findByBotuser_id($this->responseMessages->botuser_id);
 
-            if (isset($responseFromTmbot[$cnt]['message'])) {
-                $msg = "message";
-            }
-            if (isset($responseFromTmbot[$cnt]['edited_message'])) {
-                $msg = 'edited_message';
-            }
+                //VALIDATE USER
 
-            $this->responseMessages = ResponseMessages::ResponseMessages($responseFromTmbot[$cnt]->collect());
-//
-//            $this->stdClassMsg =
-            //            (object)$this->stdClassMsg = (object)(array)$this->messages;
-
-            /**
-             * $this->stdClassMsg->update_id = ($responseFromTmbot[$cnt]['update_id'] ?? 0);
-             * $this->stdClassMsg->message_id = ($responseFromTmbot[$cnt][$msg]['message_id'] ?? 0);
-             * $this->stdClassMsg->botuser_id = ($responseFromTmbot[$cnt][$msg]['from']['id'] ?? 0);
-             * $this->stdClassMsg->first_name = ($responseFromTmbot[$cnt][$msg]['from']['first_name'] ?? '');
-             * $this->stdClassMsg->last_name = ($responseFromTmbot[$cnt][$msg]['from']['last_name'] ?? '');
-             * $this->stdClassMsg->content = ($responseFromTmbot[$cnt][$msg]['text'] ?? '');
-             */
-//            dd($this->stdClassMsg);
-
-
-//			 dd($this->stdClassMsg);
-
-            // $this->botUserModel->changeUserStatus();
-            //VALIDATE USER
-            // dd(UsersStatus::cases()[$resultStatus($userFoundId)]->name);
-
-
-            // SEARCH USER IN DATABASE IF RESPONSE message contains field: user_id
-            if ($this->responseMessages->botuser_id !== 0) {
+                // SEARCH USER IN DATABASE IF RESPONSE message contains field: user_id
+//            if ($this->responseMessages->botuser_id !== 0) {
                 // echo "<pre>";
                 // echo "MESSAGE FROM USER " . $this->stdClassMsg->first_name;
                 // echo "</pre>";
-                $this->stdClassUser = $this->botUserModel->findByBotuser_id($this->responseMessages->botuser_id);
-//                $this->stdClassUser = $this->botUserModel->findByBotuser_id($this->stdClassMsg->botuser_id);
+
             } else {
 //                echo "<pre>";
 //                echo date("d/m/Y H:i:s") . "-ERROR,IN ARRAY TMBOT NOT FOUND field user_id (responseFromTmbot[cnt][user_id])";
                 Log::error('Botusers,ERROR,IN ARRAY TMBOT NOT FOUND field user_id (responseFromTmbot[cnt][user_id])');
-                echo "\n";
+//                echo "\n";
 
                 continue;
             }
@@ -312,7 +287,7 @@ class Botusers extends Controller
             // IF USER NOT FOUND CREATE NEW USER
 
             if (($this->stdClassUser == null) and ($this->responseMessages->botuser_id !== 0)) {
-                $this->newUsers = NewUsers::NewUsers($this->stdClassMsg->botuser_id)->createUser();
+                $this->newUsers = NewUsers::NewUsers($this->responseMessages->botuser_id)->createUser();
                 $this->stdClassUser = $this->botUserModel->findByBotuser_id($this->responseMessages->botuser_id);
             }
 
