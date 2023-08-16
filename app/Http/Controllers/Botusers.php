@@ -292,19 +292,6 @@ class Botusers extends Controller
             //VALIDATE USER
             // dd(UsersStatus::cases()[$resultStatus($userFoundId)]->name);
 
-            /*
-    case NOT_AUTHORIZED = 0;
-    case AUTHORIZED = 1;
-    case BAN_TIME1 = 2;
-    case BAN_TIME2 = 3;
-    case REJECT = 4;
-    case VIOLATION = 5;
-    case DELETED = 9; */
-            /*
-            $resultStatus = function (int $id): int {
-                return $this->botUserModel->getUserStatus($id);
-            };
-*/
 
             // SEARCH USER IN DATABASE IF RESPONSE message contains field: user_id
             if ($this->responseMessages->botuser_id !== 0) {
@@ -322,14 +309,11 @@ class Botusers extends Controller
                 continue;
             }
 
-
             // IF USER NOT FOUND CREATE NEW USER
 
             if (($this->stdClassUser == null) and ($this->responseMessages->botuser_id !== 0)) {
-
                 $this->newUsers = NewUsers::NewUsers($this->stdClassMsg->botuser_id)->createUser();
                 $this->stdClassUser = $this->botUserModel->findByBotuser_id($this->responseMessages->botuser_id);
-
             }
 
 
