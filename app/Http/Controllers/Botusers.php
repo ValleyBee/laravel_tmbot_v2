@@ -13,13 +13,12 @@ use App\Models\Botuser as BotUserModel;
 use App\Models\NewUsers;
 use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Facades\Log;
-use stdClass;
 use Telegram\Bot\BotManager;
 use Telegram\Bot\Exceptions\TelegramResponseException;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Objects\ResponseObject;
-
+use stdClass;
 //use App\Jobs\SendQuestionAiDelay;
 
 
@@ -200,7 +199,7 @@ class Botusers extends Controller
             Log::info("Botusers,RESPONSE FROM TM OK");
         } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
             Log::alert("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
-            $responseFromTmbot = null;
+//            $responseFromTmbot = null;
         }
 
         echo "\n";
@@ -212,7 +211,7 @@ class Botusers extends Controller
 
 //         dd(config()->get('botsmanagerconf.ENG.REPLYMARKUP_MENU_SUB_ONE'));
 
-//        $cnt = count($responseFromTmbot) - 1;
+//        $cnt = count($responseFromTmbot) - 1; # old way
         $cnt = $responseFromTmbot[0]->count()-1;
         Log::info('Botusers, total messages from updates' . $cnt);
         echo date("d/m/Y H:i:s") . " " . "total messages : " . count($responseFromTmbot);
@@ -222,11 +221,16 @@ class Botusers extends Controller
 
         for ($y = $cnt; $y >= 0; $y--) {
 
-            if (isset($responseFromTmbot[$cnt]['callback_query'])) {
+            echo ($responseFromTmbot[$cnt]->__isset('callback_query'));
+            echo "\n";
+            if ($responseFromTmbot[$cnt]->__isset('callback_query')) {
+//            (isset($responseFromTmbot[$cnt]['callback_query'])) # old way
 
                 $responseCallBack = false;
+                $this->responseCallBackQueryMessages = ResponseCallBackQueryMessages::ResponseCallBackQueryMessages($responseFromTmbot[$cnt]->collect());
+/**
                 $callback_query = new stdClass();
-
+                $callback_query->id = ($responseFromTmbot[$cnt]['callback_query']['id'] ?? 0);
                 $callback_query->update_id = ($responseFromTmbot[$cnt]['update_id'] ?? 0);
                 $callback_query->message_id = ($responseFromTmbot[$cnt]['callback_query']['message']['message_id'] ?? 0);
                 $callback_query->botuser_id = ($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
@@ -235,20 +239,21 @@ class Botusers extends Controller
                 $callback_query->content = ($responseFromTmbot[$cnt]['callback_query']['data'] ?? '');
 
                 $this->stdClassMsg->model_type = (int)$callback_query->content;
+*/
+                $userFound = $this->botUserModel->findByBotuser_id($this->responseCallBackQueryMessages->botuser_id);
 
-                $userFound = $this->botUserModel->findByBotuser_id($callback_query->botuser_id);
                 (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$userFound->lang]->name . '.INFO.roll_change');
 //
                 try {
                     $responseCallBack = $this->telegram->bot($tmBotModel)->answerCallbackQuery(
                         [
-                            'callback_query_id' => $responseFromTmbot[$cnt]['callback_query']['id'],
+                            'callback_query_id' => $this->responseCallBackQueryMessages->id,
                             'text' => $msg_to_user,
                             'show_alert' => true,
                         ]);
                     $this->telegram->bot($tmBotModel)->editMessageReplyMarkup(
-                        ['chat_id' => 909149522,
-                        'message_id' => $callback_query->message_id,
+                        ['chat_id' => $this->responseCallBackQueryMessages->botuser_id,
+                        'message_id' => $this->responseCallBackQueryMessages->message_id,
                             null,
                             null,
                         ]);
@@ -258,11 +263,11 @@ class Botusers extends Controller
                 }
                 if ($responseCallBack) {
 
-                    $userFound = $this->botUserModel->findByBotuser_id($callback_query->botuser_id);
-                    $this->botUserModel->setUserRollModel($userFound->id, (int)$this->stdClassMsg->model_type);
-                    $messageIsExist = $this->botMessageModel->findIsMsgExistByMsg_id($callback_query->message_id);
+                    $userFound = $this->botUserModel->findByBotuser_id($this->responseCallBackQueryMessages->botuser_id);
+                    $this->botUserModel->setUserRollModel($userFound->id, (int)$this->responseCallBackQueryMessages->content);
+                    $messageIsExist = $this->botMessageModel->findIsMsgExistByMsg_id($this->responseCallBackQueryMessages->message_id);
                     if (!$messageIsExist) {
-                        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($userFound->id, $callback_query);
+                        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($userFound->id, $this->responseCallBackQueryMessages);
                         $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::MENU);
 
                     }

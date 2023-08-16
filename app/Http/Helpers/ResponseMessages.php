@@ -2,7 +2,7 @@
 
 namespace App\Http\Helpers;
 
-use Ramsey\Collection\Collection;
+use Illuminate\Support\Collection;
 
 class ResponseMessages
 {
