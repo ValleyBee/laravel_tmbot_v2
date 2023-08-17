@@ -255,7 +255,7 @@ class UserProfile extends Botusers
 
         switch ($getNameValueMenu->name) {
             case ("NONE"):
-                exit();
+
                 break;
             case ("ENG"):
             case ("RU"):

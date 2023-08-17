@@ -137,7 +137,7 @@ class Botusers extends Controller
     public function start()
     {
 
-        Log::channel('stderr')->info("botusers method start(), started");
+        Log::channel('stderr')->notice("botusers START");
         Log:
         info("botusers method start(),started");
 //        Storage::append('myapp.log', date('H:i:s') . "botusers started");
@@ -165,54 +165,37 @@ class Botusers extends Controller
             $this->botMessageModel = app('botmessage');
         }
 
-
-        // echo 'this is Botusers class';
-
-
         $tmBotModel = $this->getModelTmBot();
-
         (object)$getLastRecordUpdate_id = $this->botMessageModel->getLastRecordUpdate_id();
 
-        //         if ($getLastRecordUpdate_id->update_id = null) {
-//
-//         }
         try {
-            /*
-            $par = (Telegram::getConfig());
-            $par['client_options'] = [
-                'verify' => false
-            ];
-            $par['http']['client_options'] = [
-                'verify' => false
-            ];
-            Telegram::setConfig($par);
-*/
-
-
+            /**
+             * $par = (Telegram::getConfig());
+             * $par['client_options'] = [
+             * 'verify' => false
+             * ];
+             * $par['http']['client_options'] = [
+             * 'verify' => false
+             * ];
+             * Telegram::setConfig($par);
+             */
             $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates(['offset' => $getLastRecordUpdate_id->update_id]);
-
-
-            Log::info("Botusers,RESPONSE FROM TM OK");
+            Log::info("Botusers,TM RESPONSE OK");
+            Log::channel('stderr')->info("Botusers,TM RESPONSE OK");
         } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
             Log::alert("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
 //            $responseFromTmbot = null;
         }
         echo "\n";
-
-        // self::createMenuTmbot();
-        // self::removeMenuTmbot();
-
 //         dd(config()->get('botsmanagerconf.ENG.REPLYMARKUP_MENU_SUB_ONE'));
-        $cnt = count($responseFromTmbot) - 1; # old way
-//        $cnt = $responseFromTmbot[0]->count()-1;
+        $cnt = count($responseFromTmbot) - 1;
         Log::info('Botusers, total messages from updates' . $cnt);
+        Log::channel('stderr')->info("Botusers, total messages from updates");
 //        echo date("d/m/Y H:i:s") . " " . "total messages count: " . $cnt;
         echo "\n";
 
 
         for ($y = $cnt; $y >= 0; $y--) {
-
-
             if ($responseFromTmbot[$cnt]->__isset('callback_query')) {
 //            (isset($responseFromTmbot[$cnt]['callback_query'])) # old way
 //                $userFound = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
@@ -267,17 +250,18 @@ class Botusers extends Controller
                 continue;
             }
 
-        # skip bot command
-            if (isset($responseFromTmbot[$cnt]['message']['entities'])
-                ||
+            # BOT COMMAND
+            if (isset($responseFromTmbot[$cnt]['message']['entities']) ||
                 isset($responseFromTmbot[$cnt]['edited_message']['entities'])) {
-                echo "HAS BOT COMMAND";
-                continue;
+                if (strcmp($responseFromTmbot[$cnt]['message']['test'], "/start")) {
+                    echo "accept BOT COMMAND";
+                } else {
+                    echo "NOT accept BOT COMMAND";
+                    continue;
+                }
             }
 
             if ($responseFromTmbot[$cnt]->__isset('message') or 'edited_message') {
-
-
                 $this->responseMessages = ResponseMessages::ResponseMessages($responseFromTmbot[$cnt]->collect());
                 $this->stdClassUser = $this->botUserModel->findByBotuser_id($this->responseMessages->botuser_id);
 
@@ -293,6 +277,8 @@ class Botusers extends Controller
 //                echo "<pre>";
 //                echo date("d/m/Y H:i:s") . "-ERROR,IN ARRAY TMBOT NOT FOUND field user_id (responseFromTmbot[cnt][user_id])";
                 Log::error('Botusers,ERROR,IN ARRAY TMBOT NOT FOUND field user_id (responseFromTmbot[cnt][user_id])');
+                Log::channel('stderr')->error("Botusers,ERROR,IN ARRAY TMBOT NOT FOUND field user_id (responseFromTmbot[cnt][user_id])");
+
 //                echo "\n";
 
                 continue;
@@ -312,46 +298,43 @@ class Botusers extends Controller
 //            echo date("d/m/Y H:i:s") . " " . "this->stdClassMsg->content: ";
             print_r($this->responseMessages->content);
             echo "\n";
-            $searchMenuCommandInContent = self::searchMenuCommandInContent($this->responseMessages->content)->name;
-            // dd($searchMenuCommandInContent);
-            // $searchMenuCommandInContent2 = self::searchMenuCommandInContent($this->stdClassMsg->content)->name;
+            //      $searchMenuCommandInContent = self::searchMenuCommandInContent($this->responseMessages->content)->name;
 
-//            echo date("d/m/Y H:i:s") . " searchMenuCommandInContent : " . $searchMenuCommandInContent;
-            echo "\n";
-            // dd(UsersStatus::cases()[$resultStatus($userFoundId)]->name);
             switch (UsersStatus::cases()[$this->stdClassUser->status_usr]->name) {
                 case ("NEW_USER"):
 //                    echo date("d/m/Y H:i:s") . " " . "STATUS, NEW USER\n";
                     Log::info("Botusers,NEW USER ADDED by -> switch UsersStatus::cases");
+                    Log::channel('stderr')->info("Botusers,NEW USER ADDED by -> switch UsersStatus::cases");
+
                     if (!$messageIsExist) {
+                        self::handlerCasesNewUser(MessageStatus::REJECT);
+/**
                         $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
                         $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::REJECT);
                         $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages)->setUpNewUserProfile();
+*/
                     }
-                    // $this->botUserModel->changeUserStatus($this->stdClassUser->id, UsersStatus::NOT_AUTHORIZED);
-
-                    // self::sendMessageToUserTmbot($this->stdClassMsg, $msg1 . $msg3 . $msg2);
-
                     break;
                 case ("NOT_AUTHORIZED"):
 //                    echo date("d/m/Y H:i:s") . " " . "STATUS, NOT_AUTHORIZED USER\n";
                     Log::info("Botusers, STATUS NOT_AUTHORIZED by -> switch UsersStatus::cases");
+                    Log::channel('stderr')->info("Botusers, STATUS NOT_AUTHORIZED by -> switch UsersStatus::cases");
                     if (!$messageIsExist) {
-                        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
-                        $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::REJECT);
-                        if ($searchMenuCommandInContent) {
-//                                echo  date("d/m/Y H:i:s"). "message ID: " . $this->stdClassMsg->message_id;
-//                                echo "\n";
-                            $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages, $msg_pk_id)->setUpUserSelectMenu();
-                        } else {
-                            // dd($msg_to_user);
+
+                        if (!self::handlerCases(MessageStatus::REJECT)) {
+                            /**
+                             * $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
+                             * $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::REJECT);
+                             * if ($searchMenuCommandInContent) {
+                             * $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages, $msg_pk_id)->setUpUserSelectMenu();
+                             * } else
+                             */
                             (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$this->stdClassUser->lang]->name . '.NEWUSER.wait');
                             self::sendMessageToUserTmbot(
                                 $this->responseMessages->botuser_id,
                                 $msg_to_user,
                                 $this->responseMessages->message_id,
                                 null
-
                             );
                         } # end if $searchMenuCommandInContent
                     } # end if $messageIsExist
@@ -365,18 +348,26 @@ class Botusers extends Controller
                     */
 
                     break;
-                case ("AUTHORIZED"):
+                case
+                ("AUTHORIZED"):
                     Log::info("Botusers, STATUS NOT_AUTHORIZED by -> switch UsersStatus::cases");
+                    Log::channel('stderr')->info("Botusers, STATUS NOT_AUTHORIZED by -> switch UsersStatus::cases");
+
 //                    echo date("d/m/Y H:i:s") . "STATUS, USER IS AUTHORIZED\n";
 
                     // $messageIsExist_ById = $this->botMessageModel->messageIsExist_ById($this->stdClassMsg->message_id);
 
                     if (!$messageIsExist) {
-                        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
-                        $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::NODELAY);
-                        if ($searchMenuCommandInContent) {
-                            $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages, $msg_pk_id)->setUpUserSelectMenu();
-                        } # end if $searchMenuCommandInContent
+                        # here put handler
+                        self::handlerCases(MessageStatus::NODELAY);
+                        /**
+                         * $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
+                         * $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::NODELAY);
+                         * if ($searchMenuCommandInContent) {
+                         * $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages, $msg_pk_id)->setUpUserSelectMenu();
+                         * }
+                         */
+                        # end if $searchMenuCommandInContent
                     } # end if $messageIsExist
 
 
@@ -389,15 +380,16 @@ class Botusers extends Controller
                     break;
                 case ("OUT_OF_LIMIT"):
                     Log::info("Botusers, STATUS OUT_OF_LIMIT by -> switch UsersStatus::cases");
-                    echo date("d/m/Y H:i:s") . " STATUS, OUT_OF_LIMIT\n";
+                    Log::channel('stderr')->info("Botusers, STATUS OUT_OF_LIMIT by -> switch UsersStatus::cases");
                     if (!$messageIsExist) {
-                        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
-                        $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::DELAY);
-
-                        if ($searchMenuCommandInContent) {
-//                            dd("searchMenuCommandInContent");
-                            $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages, $msg_pk_id)->setUpUserSelectMenu();
-                        } else {
+                        if (!self::handlerCases(MessageStatus::DELAY)) /**
+                         * $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
+                         * $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::DELAY);
+                         * if ($searchMenuCommandInContent) {
+                         * $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages, $msg_pk_id)->setUpUserSelectMenu();
+                         * }
+                         * else
+                         */ {
                             (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$this->stdClassUser->lang]->name . '.INFO.limit_out');
                             $msg_to_user .= "\n" . config()->get('botsmanagerconf.' . UsersMenu::cases()[$this->stdClassUser->lang]->name . '.INFO.limit_out_delay');
                             self::sendMessageToUserTmbot(
@@ -407,7 +399,6 @@ class Botusers extends Controller
                                 null
                             );
                         } # end if $searchMenuCommandInContent
-
 
                     } # end if $messageIsExist
 
@@ -421,6 +412,7 @@ class Botusers extends Controller
                     break;
                 default:
                     Log::alert('Botusers,something went wrong switch, by -> UsersStatus::cases');
+                    Log::channel('stderr')->info('Botusers,something went wrong switch, by -> UsersStatus::cases');
 //                    echo "<font color='red'>" . "something went wrong" . "</font>";
             } // END SWITCH
 
@@ -428,12 +420,13 @@ class Botusers extends Controller
         } // -- end if iteration
 //        echo "FINISH SLEEP ".time()."\n";
 //        Storage::append('myapp.log', date('H:i:s') . "botusers stop");
-        Log::info("botusers method start(), finished");
-        Log::channel('stderr')->info("botusers method start(), finished");
+        Log::info("botusers method, finished");
+        Log::channel('stderr')->notice("botusers FINISH");
     } # ------------------------ END START -------------------------- #
 
 
-    protected function getModelTmbot(): string
+    protected
+    function getModelTmbot(): string
     {
         $data = (config('telegram'));
         $cnt = (array_keys($data['bots']));
@@ -442,7 +435,8 @@ class Botusers extends Controller
         // [1] MyFisrtHHBot
     }
 
-    protected function getChannelIdTmbot(): string
+    protected
+    function getChannelIdTmbot(): string
     {
         $data = (config('telegram'));
         $result = $data['bots']['first']['channel_id'];
@@ -452,7 +446,8 @@ class Botusers extends Controller
     }
 
 
-    public function sendAnswerToUserTmbot(stdClass $replyToSendTmbot): bool
+    public
+    function sendAnswerToUserTmbot(stdClass $replyToSendTmbot): bool
     {
         // $answer = ['choices'][0]['message']['content'];
 
@@ -481,7 +476,8 @@ class Botusers extends Controller
         return true;
     }
 
-    public function sendMessageToUserTmbot(string $user_chat_id, string $message, ?string $reply_to_message_id = null, ?array $replyMarkup = null): bool
+    public
+    function sendMessageToUserTmbot(string $user_chat_id, string $message, ?string $reply_to_message_id = null, ?array $replyMarkup = null): bool
     {
 
         if ($this->botUserModel === null) {
@@ -514,7 +510,8 @@ class Botusers extends Controller
         return true;
     }
 
-    public function deleteMessageToUserTmbot(string $user_chat_id, int $message_id): bool
+    public
+    function deleteMessageToUserTmbot(string $user_chat_id, int $message_id): bool
     {
         if ($this->botUserModel === null) {
             $this->botUserModel = app('botuser');
@@ -543,7 +540,8 @@ class Botusers extends Controller
     }
 
 
-    public function searchMenuCommandInContent(string $content): object
+    protected
+    function searchMenuCommandInContent(string $content): object
     {
         echo $content;
         foreach (UsersMenu::cases() as $key => $value) {
@@ -556,6 +554,30 @@ class Botusers extends Controller
         $stdClass->name = null;
         $stdClass->value = null;
         return $stdClass;
+    }
+
+
+    protected
+    function handlerCases(MessageStatus $status): bool
+    {
+        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
+        $this->botMessageModel->setStatusMessage($msg_pk_id, $status);
+        $searchMenuCommandInContent = self::searchMenuCommandInContent($this->responseMessages->content)->name;
+
+        if ($searchMenuCommandInContent) {
+            $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages, $msg_pk_id)->setUpUserSelectMenu();
+            return true;
+        }
+        return false;
+    }
+
+    protected
+    function handlerCasesNewUser(MessageStatus $status): bool
+    {
+        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
+        $this->botMessageModel->setStatusMessage($msg_pk_id, $status);
+        $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages)->setUpNewUserProfile();
+        return true;
     }
 
     /*

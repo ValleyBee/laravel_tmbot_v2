@@ -2,8 +2,8 @@
 
 namespace App\Console;
 
-use App\Enums\Messages\Status;
 use App\Enums\Messages\Status as MessageStatus;
+use App\Http\Controllers\BotsMessages;
 use App\Http\Controllers\Botusers;
 use App\Jobs\SendAnswerAiUsers;
 use App\Jobs\SendQuestionNoDelay;
@@ -15,6 +15,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Models\AiBotClientData;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class Kernel extends ConsoleKernel
@@ -25,32 +26,40 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
+
+
     protected function schedule(Schedule $schedule): void
     {
+        # DEV
 
-//
-        $schedule->call(function ()  {
-           $r = new Botusers();
-           $r->start();
-
-
+        $schedule->call(function () {
+            $r = new Botusers();
+            $r->start();
         })->name('botusers')->withoutOverlapping();
 
-        $schedule->call(function ()  {
-            Aibot::runner(MessageStatus::DELAY,0);
+        $schedule->call(function () {
+            Aibot::runner(MessageStatus::DELAY, 0);
+        })->name('aibot_delay_model')->withoutOverlapping();
+
+        $schedule->call(function () {
+            BotsMessages::runner(MessageStatus::REPLY);
+        })->name('botmessages_REPLY')->withoutOverlapping();
 
 
-        })->name('Aibot')->withoutOverlapping();
+        $schedule->call(function () {
+            Log::channel('stderr')->alert("schedule START");
+            \Illuminate\Support\Facades\Bus::batch([
+                new TmUpdates,
+                new SendAnswerAiUsers,
+                new SendQuestionNoDelay,
+                new SendQuestionDelay,
+            ])->name("dev_test")->allowFailures()
+                ->dispatch();
+            Log::channel('stderr')->alert("schedule FINISH");
+        })->name('dev_test');
 
 
-        //
-//        $schedule->call(function ()  {
-//
-//            $r2 = new BotsMessages();
-//            $r2->start();
-//
-//        })->name('controller_one')->everyTwoSeconds();
-//
+        #  PROD
         $schedule->call(function () {
 //            Aibot::runner(MessageStatus::DELAY);
 //            info('handler Queue SendQuestionDelay');
@@ -110,25 +119,11 @@ class Kernel extends ConsoleKernel
          */
 
 
-
-
-//         $schedule->call(new Botusers())->name('controller_one')->everyTwoSeconds();
-//         $schedule->call(new BotsMessages())->name('controller_two')->everyTwoSeconds();
-
-        // if ($this->botuserscontroller == null) {
-        // 	echo "<font color='blue'>" . "NEW INSTANCE Botusercontroller in scedule " . "</font>";
-        // 	$this->botuserscontroller = app('botuserscontroller');
-        // }
-        // $schedule->command('inspire')->everyTwoSeconds();
-//		 $schedule->call(new Botusers())->name('controller_one')->everyTwoSeconds();
-
         /*I found the following works quite well for my use case:
 
         Copy
         $schedule->command(FooBarCommand::class)->everyMinute()->thenWithOutput(fn (Stringable $output) => print($output));*/
 
-        $url_1 = "http://localhost:8000/tm";
-        $url_2 = "http://localhost:8000/msg";
 
 //		 $schedule->call('App\Http\Controllers\Botusers@runner')
 //             ->name('controller_one')
@@ -140,21 +135,7 @@ class Kernel extends ConsoleKernel
 //            ->name('controller_two')
 //            ->everyTwoSeconds();
 
-        /*
 
-                $schedule->call(function () use ($url_1) {
-                    //ignore_user_abort(true);
-                    set_time_limit(0);
-                    //$data = file_get_contents('start.txt');
-                    //$d = 0;
-                    // Add 1 to $data
-                    $curl = curl_init($url_1);
-                    curl_setopt($curl, CURLOPT_URL, $url_1);
-                    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-                    $resp = curl_exec($curl);
-                    curl_close($curl);
-                })->name('controller_one')->everyTwoSeconds();
-                */
         /*
             $schedule->call(function () use ($url_2) {
                     //ignore_user_abort(true);

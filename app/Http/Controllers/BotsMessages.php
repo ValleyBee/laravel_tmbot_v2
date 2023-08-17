@@ -67,7 +67,7 @@ class BotsMessages extends Controller
     public static function runner(MessageStatus $account)
     {
 
-        Log::channel('stderr')->info("botsmessages runner started");
+//        Log::channel('stderr')->info("botsmessages runner started");
 
         $instanceName = new BotsMessages();
         $instanceName->botMessageModel = new BotMessageModel();
@@ -87,7 +87,7 @@ class BotsMessages extends Controller
 //        Log::info('botsmessages,there are no unsent messages, result is null');
 //        Storage::append('botsmessages.log', date('H:i:s') . "there are no unsent messages, result is null");
 //        Log::channel('stderr')->info("botsmessages,there are no unsent messages, result is null");
-        Log::channel('stderr')->info("botsmessages runner finished");
+//        Log::channel('stderr')->info("botsmessages runner finished");
     }
 
 
@@ -124,7 +124,7 @@ class BotsMessages extends Controller
 
 //        Storage::append('myapp.log', date('H:i:s') . "botmessages started");
         Log::info("botmessages method start() started ");
-        Log::channel('stderr')->info("botmessages method start() started");
+        Log::channel('stderr')->alert("botmessages method START");
         $i = 1;
 //        for ($i=0; $i<=10000; $i++) {
 
@@ -463,7 +463,7 @@ class BotsMessages extends Controller
 //        echo "END START";
 //        Storage::append('myapp.log', date('H:i:s') . "botmessages started");
         Log::info("botmessages method start() finished");
-        Log::channel('stderr')->info("botmessages method start() fineshed");
+        Log::channel('stderr')->alert("botmessages method FINISH");
 
 
     } // END START

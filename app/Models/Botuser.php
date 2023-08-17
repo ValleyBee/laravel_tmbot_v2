@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use stdClass;
 
@@ -172,7 +173,8 @@ class Botuser extends Model
             echo $e;
         }
         if (is_null($user_found)) {
-            echo "<font color='red'>" . "USER NOT FOUND  error message" . "</font>";
+
+            Log::info( "USER NOT FOUND info message");
             return abort(404);
             // } else {
             // 	(object)$user_found = (object)$user_found->toArray();
@@ -206,7 +208,7 @@ class Botuser extends Model
         }
 
         if (is_null($user_found)) {
-            echo "<font color='red'>" . "USER NOT FOUND  error message" . "</font>";
+            Log::info( "USER NOT FOUND info message");
             return abort(404);
             // 	return $user_found;
             // }
@@ -244,7 +246,8 @@ class Botuser extends Model
         }
 
         if (is_null($user_found)) {
-            echo "<font color='red'>" . "USER NOT FOUND  error message" . "</font>";
+
+            Log::info( "USER NOT FOUND info message");
 //			return abort(404);
             return $user_found;
         }
