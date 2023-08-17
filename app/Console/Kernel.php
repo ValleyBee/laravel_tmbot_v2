@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         # DEV
-
+/**
         $schedule->call(function () {
             $r = new Botusers();
             $r->start();
@@ -49,9 +49,6 @@ class Kernel extends ConsoleKernel
             Aibot::runner(MessageStatus::DELAY, 0);
         })->name('aibot_delay_model')->withoutOverlapping();
 
-
-
-
         $schedule->call(function () {
             Log::channel('stderr')->alert("schedule START");
             \Illuminate\Support\Facades\Bus::batch([
@@ -64,7 +61,7 @@ class Kernel extends ConsoleKernel
             Log::channel('stderr')->alert("schedule FINISH");
         })->name('dev_test');
 
-
+*/
         #  PROD
         $schedule->call(function () {
 //            Aibot::runner(MessageStatus::DELAY);
