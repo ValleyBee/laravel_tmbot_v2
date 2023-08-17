@@ -15,6 +15,8 @@ use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Facades\Log;
 use Telegram\Bot\BotManager;
 use Telegram\Bot\Commands\CommandHandler;
+use Telegram\Bot\Helpers\Update;
+
 use Telegram\Bot\Exceptions\TelegramResponseException;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Laravel\Facades\Telegram;
@@ -179,7 +181,21 @@ class Botusers extends Controller
              * ];
              * Telegram::setConfig($par);
              */
+
+
             $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates(['offset' => $getLastRecordUpdate_id->update_id]);
+
+            /**
+             * $updates = new Update($responseFromTmbot[0]);
+             * echo $updates->messageType();
+             * if ($updates->messageType()) {
+             * $rawResponse = $updates->getRawResponse();
+             *
+             * var_dump($rawResponse);
+             * }
+             */
+
+
             Log::info("Botusers,TM RESPONSE OK");
             Log::channel('stderr')->info("Botusers,TM RESPONSE OK");
         } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
@@ -197,11 +213,14 @@ class Botusers extends Controller
 
         for ($y = $cnt; $y >= 0; $y--) {
             if ($responseFromTmbot[$cnt]->__isset('callback_query')) {
-//            (isset($responseFromTmbot[$cnt]['callback_query'])) # old way
-//                $userFound = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
+                # BOT COMMAND
+
+                // (isset($responseFromTmbot[$cnt]['callback_query'])) # old way
+//              $userFound = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
                 $answerCallbackQuery = false;
                 $this->stdClassUser = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
                 $this->responseCallBackQueryMessages = ResponseCallBackQueryMessages::ResponseCallBackQueryMessages($responseFromTmbot[$cnt]->collect());
+
                 /**
                  * $callback_query = new stdClass();
                  * $callback_query->id = ($responseFromTmbot[$cnt]['callback_query']['id'] ?? 0);
@@ -215,12 +234,16 @@ class Botusers extends Controller
                  */
                 (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$this->stdClassUser->lang]->name . '.INFO.role_change');
                 try {
-                    $answerCallbackQuery = $this->telegram->bot($tmBotModel)->answerCallbackQuery(
-                        [
-                            'callback_query_id' => $this->responseCallBackQueryMessages->id,
-                            'text' => $msg_to_user,
-                            'show_alert' => true,
-                        ]);
+
+                    if (strcmp($responseFromTmbot[$cnt]['callback_query']['data'], "/cancel") !== 0) {
+                        $answerCallbackQuery = $this->telegram->bot($tmBotModel)->answerCallbackQuery(
+                            [
+                                'callback_query_id' => $this->responseCallBackQueryMessages->id,
+                                'text' => $msg_to_user,
+                                'show_alert' => true,
+                            ]);
+                        $answerCallbackQuery = false;
+                    }
                     $this->telegram->bot($tmBotModel)->editMessageReplyMarkup(
                         ['chat_id' => $this->responseCallBackQueryMessages->botuser_id,
                             'message_id' => $this->responseCallBackQueryMessages->message_id,
@@ -308,11 +331,11 @@ class Botusers extends Controller
 
                     if (!$messageIsExist) {
                         self::handlerCasesNewUser(MessageStatus::REJECT);
-/**
-                        $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
-                        $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::REJECT);
-                        $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages)->setUpNewUserProfile();
-*/
+                        /**
+                         * $msg_pk_id = $this->botMessageModel->storeOnlyNewTmMesssages($this->stdClassUser->id, $this->responseMessages);
+                         * $this->botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::REJECT);
+                         * $this->userProfile = UserProfile::UserProfile($this->stdClassUser, $this->responseMessages)->setUpNewUserProfile();
+                         */
                     }
                     break;
                 case ("NOT_AUTHORIZED"):

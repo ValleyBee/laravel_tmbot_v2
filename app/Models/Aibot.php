@@ -59,7 +59,7 @@ class Aibot extends Model
     public array $DELAY = [
         'model' => 'gpt-3.5-turbo',
         'temperature' => 0.1,
-        'max_tokens' => 4000,
+        'max_tokens' => 2000,
         'user' => '',
         'n' => 1,
         'stop' => 'None',
@@ -72,6 +72,7 @@ class Aibot extends Model
                 "role" => "user", "content" => "Famous people born on August"],
         ],
     ];
+
     /**
      * [
      * ['text' => 'Doctor of Philosophy in Psychology', 'callback_data' => 1],
@@ -84,16 +85,6 @@ class Aibot extends Model
      * ],
      */
 
-
-// protected ?AiModelThree $aiModelThree = null;
-
-//    protected string $modelType = 'gpt-3.5-turbo';
-//    protected float $temperature = 0.4;
-//    protected int $max_tokens = 1000;
-//    protected string $user = '';
-//    protected int $n = 1;
-//    protected string $stop = 'None';
-//    'prompt' => 'Say this is a test',
 
 
 // protected string $base_uri = 'https://api.openai.com/v1/chat/completions';
@@ -144,9 +135,7 @@ class Aibot extends Model
 
 
         ${'client' . $account} = null;
-
-
-        (array)$modelData = $this->{$account};
+        (array)$modelData = $this->{$account} ?? $this->$DELAY;
 
         // $response = $this->openaiclientbot->models()->list();
         // dd($response);
@@ -158,10 +147,9 @@ class Aibot extends Model
         // ];
 
 
-        $updateClientData = function (array $param) use (&$modelData, $stdClassMsg): array {
-
+        $updateClientData = function (array $param, string $systemRole) use (&$modelData, $stdClassMsg): array {
             $modelData['messages'][0] = [
-                "role" => "system", 'content' => 'You are an assistant that speaks like Doctor of Theology in the Christian religion'
+                "role" => "system", 'content' => $systemRole,
             ];
             $modelData['messages'][1] = [
                 "role" => "assistant", 'content' => $stdClassMsg->reply_from_ai ?? ''
@@ -169,9 +157,7 @@ class Aibot extends Model
             $modelData['messages'][2] = [
                 "role" => "user", 'content' => $stdClassMsg->content
             ];
-
             $modelData['user'] = $stdClassMsg->botuser_id;
-
             foreach ($param as $key => $value) {
                 $modelData[$key] = $value;
             }
@@ -185,16 +171,14 @@ class Aibot extends Model
 //                ${'class_aitbot' . $stdClassMsg->botuser_id}
 //                ${'client' . $account} = OpenAI::client(config()->get('openai.payed_response.api_key'), config()->get('openai.payed_response.organization'));
                 ${'client' . $account} = OpenAI::client(config()->get('openai.free_response.api_key'), config()->get('openai.free_response.organization'));
-                $role = $stdClassUser->model_type;
-//
+                $systemRole = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard');
                 $updateClientData(
                     [
                         'max_tokens' => 2000,
                     ],
+                    'You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
                 );
 
-//                session_start();
-                /*session is started if you don't write this line can't use $_Session  global variable*/
 //                Storage::put('freemodel_last_session.log', date("d/m/Y H:i:s"));
                 Log::alert('freemodel_last_session');
                 Log::info('Make config for DELAY question to AI, by -> MessageStatus::cases');
@@ -214,14 +198,16 @@ class Aibot extends Model
                 break;
             case ("NODELAY"):
                 ${'client' . $account} = OpenAI::client(config()->get('openai.payed_response.api_key'), config()->get('openai.payed_response.organization'));
+                $systemRole = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard');
                 $updateClientData(
                     [
                         'max_tokens' => 100,
-                        'messages'[0] => 'you are physicist with PhD',
                     ],
+                    'You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
                 );
-
                 Log::info('Make config for NODELAY question to AI, by -> MessageStatus::cases');
+
+
                 /*
                 $this->openaiclientbot = OpenAI::factory()
                     ->withBaseUri('https://api.openai.com/v1/chat/completions')
@@ -718,57 +704,6 @@ class Aibot extends Model
 
     // 	return $this->aiBot;
     // }
-
-
-    public function sendMsgToAi(array $data): array
-    {
-        // dd($data[0]);
-        // $reply = Tmbot::getUserWithReply($data);
-
-        // IF CONTENT TOO SHORT
-        if (strlen($data['content']) <= 8) {
-            (int)$id = $data['id'];
-
-            $anw = $data['first_name'] . ",текст запитання має складатися з декількох слів.Такі запити як: ага, ого, угу, хахаха... не будуть оброблені!";
-
-            ob_start();
-            echo("\e[97;44mContent is too short...\e[0m\n");
-            error_log(ob_get_clean(), 4);
-
-
-            exit(" exit loop too short content\n");
-        }
-
-        $aibot = new Aibot();
-        $cnt = count($data) - 1;
-        echo "total unsent messages " . $cnt;
-        echo "messages from " . $data['first_name'];
-
-        // dd($msgPrevousReply);
-        if (isset($msgPrevousReply['reply_from_ai'])) {
-            $msgPrevousReply = $msgPrevousReply['reply_from_ai'];
-        } else {
-            $msgPrevousReply = '';
-        }
-
-
-        $anw = $aibot->clientAibot($data, $msgPrevousReply);
-
-        if ($anw == 'null') {
-            echo "AI not answered!";
-            // change status done
-            return [];
-        } else {
-            (int)$id = $data['id'];
-
-
-            echo "AI answer  messages: " . $anw;
-            echo "<br>";
-
-
-            return [$data, ['answer' => $anw]];
-        }
-    } // END sendMsgToAi
 
 
 }

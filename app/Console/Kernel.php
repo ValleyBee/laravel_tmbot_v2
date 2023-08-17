@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Enums\Messages\Status;
 use App\Enums\Messages\Status as MessageStatus;
 use App\Http\Controllers\BotsMessages;
 use App\Http\Controllers\Botusers;
@@ -38,12 +39,17 @@ class Kernel extends ConsoleKernel
         })->name('botusers')->withoutOverlapping();
 
         $schedule->call(function () {
+            BotsMessages::runner(MessageStatus::DELAY);
+            BotsMessages::runner(MessageStatus::NODELAY);
+            BotsMessages::runner(MessageStatus::REPLY);
+
+        })->name('botmessages_runner')->withoutOverlapping();
+
+        $schedule->call(function () {
             Aibot::runner(MessageStatus::DELAY, 0);
         })->name('aibot_delay_model')->withoutOverlapping();
 
-        $schedule->call(function () {
-            BotsMessages::runner(MessageStatus::REPLY);
-        })->name('botmessages_REPLY')->withoutOverlapping();
+
 
 
         $schedule->call(function () {
