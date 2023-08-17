@@ -190,4 +190,9 @@ Output
 $ Prices are per 1,000 tokens. You can think of tokens as pieces of words, where 1,000 tokens is about 750 words. This paragraph is 35 tokens.
 $
 # DIY. Зробити своїми руками." "id" => -1001776779122,  Test_TM_AI_ChatBot is administrator.
+# DIY. Зробити своїми руками. #supergroup" (-1001850905790) 
+# bot "Test_TM_AI_ChatBot"  int(6221376294)
+
+
  
+

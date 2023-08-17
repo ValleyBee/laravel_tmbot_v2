@@ -185,6 +185,7 @@ class Botusers extends Controller
 
             $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates(['offset' => $getLastRecordUpdate_id->update_id]);
 
+//            var_dump($responseFromTmbot);
             /**
              * $updates = new Update($responseFromTmbot[0]);
              * echo $updates->messageType();
@@ -459,10 +460,10 @@ class Botusers extends Controller
     }
 
     protected
-    function getChannelIdTmbot(): string
+    function getChannelIdTmbot(string $bot): string
     {
-        $data = (config('telegram'));
-        $result = $data['bots']['first']['channel_id'];
+        $data =  config()->get('telegram.bots');
+        $result = $data[$bot]['channel_id'];
         // dd($cnt);
         return ($result);
         // RenewalChristianChurch_Lviv_bot;

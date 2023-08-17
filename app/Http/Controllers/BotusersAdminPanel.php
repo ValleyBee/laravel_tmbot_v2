@@ -442,22 +442,20 @@ class BotusersAdminPanel extends Botusers
         if ($this->telegram === null) {
             $this->telegram = app('telegram');
         }
-
         $tmBotModel = self::getModelTmBot();
-
         $request->validate([
             'file' => 'file|mimes:jpeg,png,gif'
         ]);
-
         $photo = $request->file('file');
+       $this->telegram->bot($tmBotModel)->sendPhoto([
 
-
-        $this->telegram->bot($tmBotModel)->sendPhoto([
-
-            'chat_id' => '-1001776779122',
-            'photo' => InputFile::contents(file_get_contents($photo->getRealPath()), Str::random(10) . '.' . $photo->getClientOriginalExtension())
+            'chat_id' => self::getChannelIdTmbot(bot:$tmBotModel),
+            'photo' => InputFile::contents(file_get_contents($photo->getRealPath()), Str::random(10) . '.' . $photo->getClientOriginalExtension()),
+           'parse_mode' => 'Markdown'
         ]);
-
         return redirect()->back();
     }
+
+
+
 }
