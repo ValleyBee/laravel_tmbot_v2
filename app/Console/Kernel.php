@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         # DEV
-
+/**
         $schedule->call(function () {
             $r = new Botusers();
             $r->start();
@@ -61,9 +61,9 @@ class Kernel extends ConsoleKernel
             Log::channel('stderr')->alert("schedule FINISH");
         })->name('dev_test');
 
-
+*/
         #  PROD
-/**
+
         $schedule->call(function () {
 //            Aibot::runner(MessageStatus::DELAY);
 //            info('handler Queue SendQuestionDelay');
@@ -103,7 +103,7 @@ class Kernel extends ConsoleKernel
             SendAnswerAiUsers::dispatch()->onQueue("SendAnswerAiUsers");
         })->name('controller_botmessages')->withoutOverlapping()->everyTwoSeconds();
 
-*/
+
         #  END PROD
 
         /**
