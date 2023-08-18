@@ -75,7 +75,6 @@ class Botuser extends Model
         return $res[0] ?? null;
     }
 
-
     protected function sleepFloatSecs(int $secs = 30)
     {
         ob_start();
