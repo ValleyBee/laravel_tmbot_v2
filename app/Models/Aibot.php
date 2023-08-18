@@ -154,7 +154,7 @@ class Aibot extends Model
                 "role" => "assistant", 'content' => $stdClassMsg->reply_from_ai ?? ''
             ];
             $modelData['messages'][2] = [
-                "role" => "user", 'content' => $stdClassMsg->content
+                "role" => "user", 'content' =>  date('d F y')." is the date now,my the question is: ".$stdClassMsg->content
             ];
             $modelData['user'] = $stdClassMsg->botuser_id;
             foreach ($param as $key => $value) {
