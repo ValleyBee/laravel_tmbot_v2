@@ -23,20 +23,15 @@ Route::get('/', function () {
 	return view('welcome');
 });
 
-// Route::resource('tmbot', TmbotController::class);
-// Route::resource('aibot', AibotController::class);
+
 
 //Route::get('/tm2', [TmbotController::class, 'start'])->name('tm2.start');
-Route::get('/tm', [Botusers::class, 'start'])->name('tm.start');
 
 //Route::get('/tm-test', function () {
 //    App\Jobs\StarterMethods::dispatch()->delay(1);
 //});
 
-Route::get('/runner',[Botusers::class, 'runner'])->name('tm.runner');
 
-Route::get('/aibot-test', [AibotController::class, 'start'])->name('ai.start');
-Route::get('/aibot-test2', [AibotController::class, 'start_two'])->name('ai.start_two');
 Route::get('/sendmsg', [BotusersAdminPanel::class, 'sendMessage'])->name('sendmsg.sendMessage');
 Route::put('/sendmsg-auth', [BotusersAdminPanel::class, 'sendMessageAuth'])->name('sendmsg.sendMessageAuth');
 Route::put('/sendmenu', [BotusersAdminPanel::class, 'sendMenu'])->name('sendmenu.sendMenu');
@@ -52,5 +47,3 @@ Route::put('/update-user', [BotusersAdminPanel::class, 'updateUser'])->name('use
 
 Route::post('/store-photo', [BotusersAdminPanel::class, 'storePhoto'])->name('users.photo');
 
-
-Route::get('/msg', [Messages::class, 'start'])->name('msg.start');
