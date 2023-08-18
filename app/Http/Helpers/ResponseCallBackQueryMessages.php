@@ -11,7 +11,6 @@ use Telegram\Bot\Objects\ResponseObject;
 class ResponseCallBackQueryMessages
 {
 
-
     public int $id;
     public int $user_id;
     public string $botuser_id;
