@@ -69,8 +69,6 @@ class ResponseCallBackQueryMessages
             $msg_pk_id = $botMessageModel->storeOnlyNewTmMesssages($this->user_id, $this);
             $botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::MENU);
         }
-
-
     }
 
 }
