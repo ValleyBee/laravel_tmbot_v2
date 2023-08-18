@@ -272,28 +272,29 @@ class UserProfile extends Botusers
                 $sendMsgWithMenuToUser($msg_to_user, $menu);
                 break;
             case ("SUB_MENU"):
-                $lang_name = UsersMenu::cases()[$this->lang]->name ?? UsersMenu::ENG->name;
+                $lang_name = UsersMenu::cases()[$this->lang]->name;
+                 $lang_name = ($lang_name == "NONE") ? 'ENG' : $lang_name;
                 (string)$msg_to_user = config()->get('botsmanagerconf.' . $lang_name . '.INFO.ai_questions');
                 (array)$menu = self::keyboardSubMenuTmbot($lang_name);
+
                 $sendMsgWithMenuToUser($msg_to_user, $menu);
                 break;
             case("BACK_MAIN"):
-
-                $lang_name = UsersMenu::cases()[$this->lang]->name ?? UsersMenu::ENG->name;
+                $lang_name = UsersMenu::cases()[$this->lang]->name;
+                $lang_name = ($lang_name == 'NONE') ? 'ENG' : $lang_name;
                 (string)$msg_to_user = config()->get('botsmanagerconf.' . $lang_name . '.INFO.back_main_menu');
                 (array)$menu = self::keyboardMainMenuTmbot($lang_name);
                 $sendMsgWithMenuToUser($msg_to_user, $menu);
                 break;
             case ("CHK_LIMIT"):
-
                 (string)$msg_to_user = config()->get('botsmanagerconf.' .
-                        UsersMenu::cases()[$this->lang]->name . '.INFO.limit_have') . " " .
-                    $this->botUserModel->getUserLimit($this->id);
-
+                 UsersMenu::cases()[$this->lang]->name . '.INFO.limit_have') . " " .
+                 $this->botUserModel->getUserLimit($this->id);
                 $sendMsgWithoutMenuToUser($msg_to_user);
                 break;
             case ("ROLL_AI"):
-                $lang_name = UsersMenu::cases()[$this->lang]->name ?? UsersMenu::ENG->name;
+                $lang_name = UsersMenu::cases()[$this->lang]->name;
+                $lang_name = ($lang_name == 'NONE') ? 'ENG' : $lang_name;
                 (string)$msg_to_user = config()->get('botsmanagerconf.' . $lang_name . '.INFO.assigning_roles');
                 (array)$menu = self::keyboardRollMenuTmbot($lang_name);
                 $sendMsgWithMenuToUser($msg_to_user, $menu);
@@ -312,20 +313,24 @@ class UserProfile extends Botusers
 
     }
 
-
     // $this->botUserModel->changeUserStatus($this->stdClassUser->id, UsersStatus::NOT_AUTHORIZED);
 
     protected function keyboardMainMenuTmbot(string $name_lang): array
     {
+        $name_lang =  ($name_lang == 'NONE') ? 'ENG' : $name_lang;
         return config()->get('botsmanagerconf.' . $name_lang . '.REPLYMARKUP_MENU_MAIN');
     }
 
     protected function keyboardSubMenuTmbot(string $name_lang): array
     {
+        $name_lang =  ($name_lang == 'NONE') ? 'ENG' : $name_lang;
+
         return config()->get('botsmanagerconf.' . $name_lang . '.REPLYMARKUP_MENU_SUB_ONE');
     }
+
     protected function keyboardRollMenuTmbot(string $name_lang): array
     {
+        $name_lang =  ($name_lang == 'NONE') ? 'ENG' : $name_lang;
         return config()->get('botsmanagerconf.' . $name_lang . '.REPLYMARKUP_MENU_INLINE');
     }
 

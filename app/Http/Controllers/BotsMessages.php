@@ -353,7 +353,9 @@ class BotsMessages extends Controller
                                 );
                             break;
             */
+            case ("NOT_AUTHORIZED"):
 
+                break;
             case ("AUTHORIZED"):
             case ("OUT_OF_LIMIT"):
 
@@ -400,8 +402,9 @@ class BotsMessages extends Controller
         switch (MessageStatus::cases()[$instanceName->stdClassMsg->status_msg]->name) {
             case ("DELAY"):
             case ("NODELAY"):
-                $instanceName->stdClassMsg->reply_from_ai = $this->botMessageModel->getLastReplyById($instanceName->stdClassMsg->user_id);
 
+
+                $instanceName->stdClassMsg->reply_from_ai = $this->botMessageModel->getLastReplyById($instanceName->stdClassMsg->user_id);
                 /** cut reply to 128 characters */
                 $instanceName->stdClassMsg->reply_from_ai = mb_substr($instanceName->stdClassMsg->reply_from_ai, 0, 128,'UTF-8');
 

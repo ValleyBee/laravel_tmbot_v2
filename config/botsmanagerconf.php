@@ -41,9 +41,9 @@ return [
                 [
                     ['text' => "\u{1F393} Change role of AI"],
                 ],
-                [
-                    ['text' => "\u{1F1F7}\u{1F1FA}\u{1F1EC}\u{1F1E7}\u{1f1fa}\u{1f1e6} change language"],
-                ],
+//                [
+//                    ['text' => "\u{1F1F7}\u{1F1FA}\u{1F1EC}\u{1F1E7}\u{1f1fa}\u{1f1e6} Change MENU language "],
+//                ],
 
             ],
 
@@ -142,9 +142,9 @@ return [
                 [
                     ['text' => "\u{1F393} Змініти модель поведінки AI"],
                 ],
-                [
-                    ['text' => "\u{1F1F7}\u{1F1FA}\u{1F1EC}\u{1F1E7}\u{1f1fa}\u{1f1e6} Змінити мову"],
-                ],
+//                [
+//                    ['text' => "\u{1F1F7}\u{1F1FA}\u{1F1EC}\u{1F1E7}\u{1f1fa}\u{1f1e6} Змінити мову МЕНЮ"],
+//                ],
 
             ],
             'one_time_keyboard' => true,
@@ -237,9 +237,9 @@ return [
                 [
                     ['text' => "\u{1F393} Изменить модель поведения AI"],
                 ],
-                [
-                    ['text' => "\u{1F1F7}\u{1F1FA}\u{1F1EC}\u{1F1E7}\u{1f1fa}\u{1f1e6} Изменить язык"],
-                ],
+//                [
+//                    ['text' => "\u{1F1F7}\u{1F1FA}\u{1F1EC}\u{1F1E7}\u{1f1fa}\u{1f1e6} Изменить язык МЕНЮ"],
+//                ],
 
             ],
             'one_time_keyboard' => true,

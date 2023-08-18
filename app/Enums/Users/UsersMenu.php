@@ -9,7 +9,7 @@ enum UsersMenu: int
     case ENG = 2;
     case UA = 3;
     case SUB_MENU = 4;
-    case CNG_LANG = 5;
+//    case CNG_LANG = 5;
     case CHK_LIMIT = 6;
     case ROLL_AI = 7;
     case START_OVER = 8;
@@ -54,11 +54,15 @@ enum UsersMenu: int
             $menuRollAiUA['keyboard'][2][0]['text'],
             $menuRollAiRU['keyboard'][2][0]['text'],
         ];
+/**
         $CNG_LANG = [
             $menuMainENG['keyboard'][3][0]['text'],
             $menuMainUA['keyboard'][3][0]['text'],
             $menuMainRU['keyboard'][3][0]['text'],
         ];
+        */
+
+
         $BACK_MAIN = [
             $menuSubENG['keyboard'][0][0]['text'],
             $menuSubUA['keyboard'][0][0]['text'],
@@ -91,7 +95,7 @@ enum UsersMenu: int
             self::ENG->value => [$ENG],
             self::UA->value => [$UA],
             self::SUB_MENU->value => $SUB_MENU,
-            self::CNG_LANG->value => $CNG_LANG,
+//            self::CNG_LANG->value => $CNG_LANG,
             self::CHK_LIMIT->value => $CHK_LIMIT,
             self::ROLL_AI->value => $ROLL_AI,
             self::BACK_MAIN->value => $BACK_MAIN,
