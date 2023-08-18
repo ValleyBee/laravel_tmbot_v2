@@ -12,8 +12,6 @@ class ResponseCallBackQueryMessages
 {
 
 
-//   protected $guarded = [];
-
     public int $id;
     public int $user_id;
     public string $botuser_id;
