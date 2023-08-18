@@ -66,10 +66,10 @@ class Aibot extends Model
         //'prompt' => 'Say this is a test',
         'messages' => [
             [
-                "role" => 'system', 'content' => 'you are physicist with PhD'
+                "role" => 'system', 'content' => 'you are physicist with PhD.'
             ],
             [
-                "role" => "user", "content" => "Famous people born on August"],
+                "role" => "user", "content" => "empty"],
         ],
     ];
 
