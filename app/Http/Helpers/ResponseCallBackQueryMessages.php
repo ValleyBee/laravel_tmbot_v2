@@ -44,7 +44,6 @@ class ResponseCallBackQueryMessages
     }
     public static function ResponseCallBackQueryMessages(Collection $responseFromTmbot)
     {
-
         return new ResponseCallBackQueryMessages(
             id:$responseFromTmbot['callback_query']['id'] ?? 0,
             botuser_id: $responseFromTmbot['callback_query']['from']['id'] ?? 0,
