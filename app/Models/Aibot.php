@@ -42,7 +42,7 @@ class Aibot extends Model
     protected array $NODELAY = [
         'model' => 'gpt-3.5-turbo',
         'temperature' => 0.1,
-        'max_tokens' => 100,
+        'max_tokens' => 1000,
         'user' => '',
         'n' => 1,
         'stop' => 'None',
