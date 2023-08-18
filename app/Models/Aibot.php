@@ -86,7 +86,6 @@ class Aibot extends Model
      */
 
 
-
 // protected string $base_uri = 'https://api.openai.com/v1/chat/completions';
 // protected string $message = '';
 //    protected string $roleAI = '';
@@ -171,7 +170,7 @@ class Aibot extends Model
 //                ${'class_aitbot' . $stdClassMsg->botuser_id}
 //                ${'client' . $account} = OpenAI::client(config()->get('openai.payed_response.api_key'), config()->get('openai.payed_response.organization'));
                 ${'client' . $account} = OpenAI::client(config()->get('openai.free_response.api_key'), config()->get('openai.free_response.organization'));
-                $systemRole = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard');
+                $systemRole = config()->get('botsmanagerconf.' . 'ENG' . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard'); //    //UsersMenu::cases()[$stdClassUser->lang]->name
                 $updateClientData(
                     [
                         'max_tokens' => 2000,
@@ -179,7 +178,7 @@ class Aibot extends Model
                     'You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
                 );
 
-//                Storage::put('freemodel_last_session.log', date("d/m/Y H:i:s"));
+                Storage::put('freemodel_last_session.log', date("d/m/Y H:i:s"));
                 Log::alert('freemodel_last_session');
                 Log::info('Make config for DELAY question to AI, by -> MessageStatus::cases');
 
@@ -198,7 +197,8 @@ class Aibot extends Model
                 break;
             case ("NODELAY"):
                 ${'client' . $account} = OpenAI::client(config()->get('openai.payed_response.api_key'), config()->get('openai.payed_response.organization'));
-                $systemRole = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard');
+
+                $systemRole = config()->get('botsmanagerconf.' . 'ENG' . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard');
                 $updateClientData(
                     [
                         'max_tokens' => 100,
@@ -217,14 +217,14 @@ class Aibot extends Model
     */
                 break;
             default:
-//                echo date("d/m/Y H:i:s") . " " . "something went wrong switch Aibot";
+//
                 Log::alert('something went wrong switch, by -> MessageStatus::cases');
 
                 exit();
         } #---------- end switch
 
 
-        // print_r($this->stdClassUser);
+
 
         $msg_to_user = "\u{2611}ID:" . $stdClassMsg->message_id . " " .
         config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.msg_sent')
@@ -252,10 +252,7 @@ class Aibot extends Model
          * */
 
 
-        /*
-        echo $new_langConf . " :" . $stdClassMsg->content . "\n";
-        echo $previos_langConf . " :" . $stdClassMsg->reply_from_ai. "\n";;
-        */
+
         echo $stdClassMsg->message_id . "\n";
         echo $stdClassMsg->content . "\n";
         echo $stdClassMsg->reply_from_ai . "\n";;
