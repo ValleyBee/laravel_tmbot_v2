@@ -149,7 +149,7 @@ class Botuser extends Model
         }
 
         if (is_null($user_found)) {
-            echo('USER NOT FOUND  error message');
+            Log::info( "USER NOT FOUND getUserStatus");
             return abort(404);
             // } else {
             // 	(object)$user_found = (object)$user_found->toArray();
@@ -174,7 +174,7 @@ class Botuser extends Model
         }
         if (is_null($user_found)) {
 
-            Log::info( "USER NOT FOUND info message");
+            Log::info( "USER NOT FOUND getUserModelType");
             return abort(404);
             // } else {
             // 	(object)$user_found = (object)$user_found->toArray();
@@ -208,7 +208,7 @@ class Botuser extends Model
         }
 
         if (is_null($user_found)) {
-            Log::info( "USER NOT FOUND info message");
+            Log::info( "USER NOT FOUND getUser");
             return abort(404);
             // 	return $user_found;
             // }
@@ -247,7 +247,7 @@ class Botuser extends Model
 
         if (is_null($user_found)) {
 
-            Log::info( "USER NOT FOUND info message");
+            Log::info( "USER NOT FOUND findByBotuser_id");
 //			return abort(404);
             return $user_found;
         }
@@ -314,8 +314,9 @@ class Botuser extends Model
         try {
             (object)$userLimit = $this->botUserModel->select('limit_req_num')->find($id);
             if (is_null($userLimit)) {
-                echo "<font color='red'>" . "USER NOT FOUND error message \n" . "</font>";
-                return abort(404);
+                Log::info( "USER NOT FOUND getUserLimit");
+                //                echo "<font color='red'>" . "USER NOT FOUND error message \n" . "</font>";
+//                return abort(404);
             }
         } catch (QueryException $e) {
             echo $e;
@@ -333,7 +334,8 @@ class Botuser extends Model
         try {
             $user = $this->botUserModel->find($id);
             if (is_null($user)) {
-                echo date("d/m/Y H:i:s") . "USER NOT FOUND error message \n";
+                Log::info( "USER NOT FOUND setUserlang");
+                //                echo date("d/m/Y H:i:s") . "USER NOT FOUND error message \n";
             }
 
             $user->lang = $userLang;
@@ -354,7 +356,8 @@ class Botuser extends Model
         try {
             $user = $this->botUserModel->find($id);
             if (is_null($user)) {
-                echo date("d/m/Y H:i:s") . "USER NOT FOUND error message \n";
+                Log::info( "USER NOT FOUND setUserRollModel ");
+//                echo date("d/m/Y H:i:s") . "USER NOT FOUND error message \n";
             }
 
             $user->model_type = $rollModel;

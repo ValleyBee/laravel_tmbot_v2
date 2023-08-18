@@ -48,13 +48,13 @@ class ResponseCallBackQueryMessages
     {
 
         return new ResponseCallBackQueryMessages(
-            $responseFromTmbot['callback_query']['id'] ?? 0,
-            $responseFromTmbot['callback_query']['from']['id'] ?? 0,
-            $responseFromTmbot['update_id'] ?? 0,
-            $responseFromTmbot['callback_query']['message']['message_id'] ?? 0,
-            $responseFromTmbot['callback_query']['from']['first_name'] ?? '',
-            $responseFromTmbot['callback_query']['from']['last_name'] ?? '',
-            $responseFromTmbot['callback_query']['data'] ?? '',
+            id:$responseFromTmbot['callback_query']['id'] ?? 0,
+            botuser_id: $responseFromTmbot['callback_query']['from']['id'] ?? 0,
+            update_id: $responseFromTmbot['update_id'] ?? 0,
+            message_id: $responseFromTmbot['callback_query']['message']['message_id'] ?? 0,
+            first_name: $responseFromTmbot['callback_query']['from']['first_name'] ?? '',
+            last_name: $responseFromTmbot['callback_query']['from']['last_name'] ?? '',
+            content:$responseFromTmbot['callback_query']['data'] ?? '',
 
         );
     }
@@ -64,6 +64,7 @@ class ResponseCallBackQueryMessages
         $this->user_id = $user_id;
         $botMessageModel = app('botmessage');
         $botUserModel = app('botuser');
+
         $botUserModel->setUserRollModel($this->user_id, (int)$this->content);
         $messageIsExist = $botMessageModel->findIsMsgExistByMsg_id($this->message_id);
         if (!$messageIsExist) {

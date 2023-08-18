@@ -243,8 +243,8 @@ class Botusers extends Controller
                                 'text' => $msg_to_user,
                                 'show_alert' => true,
                             ]);
-                        $answerCallbackQuery = false;
                     }
+
                     $this->telegram->bot($tmBotModel)->editMessageReplyMarkup(
                         ['chat_id' => $this->responseCallBackQueryMessages->botuser_id,
                             'message_id' => $this->responseCallBackQueryMessages->message_id,
@@ -462,7 +462,7 @@ class Botusers extends Controller
     protected
     function getChannelIdTmbot(string $bot): string
     {
-        $data =  config()->get('telegram.bots');
+        $data = config()->get('telegram.bots');
         $result = $data[$bot]['channel_id'];
         // dd($cnt);
         return ($result);
