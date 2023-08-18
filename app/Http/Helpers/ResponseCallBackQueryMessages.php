@@ -65,5 +65,4 @@ class ResponseCallBackQueryMessages
             $botMessageModel->setStatusMessage($msg_pk_id, MessageStatus::MENU);
         }
     }
-
 }
