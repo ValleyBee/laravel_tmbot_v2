@@ -42,8 +42,6 @@ class ResponseCallBackQueryMessages
         $this->content = $content;
 
     }
-
-
     public static function ResponseCallBackQueryMessages(Collection $responseFromTmbot)
     {
 
