@@ -433,7 +433,6 @@ class BotusersAdminPanel extends Botusers
         return view('photo');
     }
 
-
     public function storePhoto(Request $request)
     {
         if ($this->botUserModel === null) {

@@ -60,7 +60,6 @@ class Kernel extends ConsoleKernel
                 ->dispatch();
             Log::channel('stderr')->alert("schedule FINISH");
         })->name('dev_test');
-
 */
         #  PROD
 

@@ -246,7 +246,6 @@ return [
             'resize_keyboard' => true,
             'input_field_placeholder' => 'Сделайте выбор'
         ],
-
         'REPLYMARKUP_MENU_SUB_ONE' => [
             'keyboard' => [
                 [

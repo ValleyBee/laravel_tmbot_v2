@@ -321,8 +321,6 @@ class BotsMessages extends Controller
     ------------------------V ---------------
     Get user's all data except token
         */
-
-
         // $resultStatus = $this->botUserModel->getUserStatus($this->stdclass->user_id);
         // $resultModelType = $this->botUserModel->getUserModelType($this->stdclass->user_id);
 

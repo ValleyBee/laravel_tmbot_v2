@@ -63,7 +63,6 @@ class ResponseCallBackQueryMessages
         $this->user_id = $user_id;
         $botMessageModel = app('botmessage');
         $botUserModel = app('botuser');
-
         $botUserModel->setUserRollModel($this->user_id, (int)$this->content);
         $messageIsExist = $botMessageModel->findIsMsgExistByMsg_id($this->message_id);
         if (!$messageIsExist) {

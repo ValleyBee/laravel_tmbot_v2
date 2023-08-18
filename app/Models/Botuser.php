@@ -47,15 +47,12 @@ class Botuser extends Model
     public int $status;
 */
     protected $value = 0;
-
-
     public function increase()
     {
         $this->value++;
 
         return $this->value;
     }
-
 
     public function messages()
     {

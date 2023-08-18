@@ -24,7 +24,6 @@ Route::get('/', function () {
 });
 
 
-
 //Route::get('/tm2', [TmbotController::class, 'start'])->name('tm2.start');
 
 //Route::get('/tm-test', function () {
