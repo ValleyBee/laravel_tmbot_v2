@@ -22,7 +22,6 @@ class ResponseCallBackQueryMessages
     public string $first_name;
     public string $last_name;
     public string $content;
-
     protected function __construct(
         int    $id,
         string $botuser_id,
