@@ -201,7 +201,7 @@ class Aibot extends Model
                 $systemRole = config()->get('botsmanagerconf.' . 'ENG' . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard');
                 $updateClientData(
                     [
-                        'max_tokens' => 100,
+                        'max_tokens' => 1000,
                     ],
                     'You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
                 );
