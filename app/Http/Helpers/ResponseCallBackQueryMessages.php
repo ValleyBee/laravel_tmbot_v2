@@ -58,7 +58,6 @@ class ResponseCallBackQueryMessages
 
         );
     }
-
     public function handlerCallBackQueryMessages(int $user_id): void
     {
         $this->user_id = $user_id;
