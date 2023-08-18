@@ -51,7 +51,6 @@ class ResponseCallBackQueryMessages
             first_name: $responseFromTmbot['callback_query']['from']['first_name'] ?? '',
             last_name: $responseFromTmbot['callback_query']['from']['last_name'] ?? '',
             content:$responseFromTmbot['callback_query']['data'] ?? '',
-
         );
     }
     public function handlerCallBackQueryMessages(int $user_id): void
