@@ -178,7 +178,7 @@ class Aibot extends Model
                     'You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
                 );
 
-                Storage::put('freemodel_last_session.log', date("d/m/Y H:i:s"));
+                Storage::append('freemodel_last_session.log', date("d/m/Y H:i:s"));
                 Log::alert('freemodel_last_session');
                 Log::info('Make config for DELAY question to AI, by -> MessageStatus::cases');
 
@@ -205,6 +205,7 @@ class Aibot extends Model
                     ],
                     'You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
                 );
+                Storage::append('paymodel_last_session.log', date("d/m/Y H:i:s"));
                 Log::info('Make config for NODELAY question to AI, by -> MessageStatus::cases');
 
 
@@ -222,9 +223,6 @@ class Aibot extends Model
 
                 exit();
         } #---------- end switch
-
-
-
 
         $msg_to_user = "\u{2611}ID:" . $stdClassMsg->message_id . " " .
         config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.msg_sent')
@@ -346,6 +344,7 @@ class Aibot extends Model
         //        return $response->toArray();
         Log::channel('stderr')->info("clientAiApi finished");
         Log::info("clientAiApi finished");
+        Log::notice(print_r("memory_usage_Aibot = " . memory_get_usage()));
     } # END Client
 
 
@@ -461,6 +460,7 @@ class Aibot extends Model
 
     public function storeQuestionAi(stdClass $stdClassMsg)
     {
+        # IN DEV MODE
         var_dump($stdClassMsg);
 
         $createFields = array();

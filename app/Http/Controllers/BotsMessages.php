@@ -284,7 +284,7 @@ class BotsMessages extends Controller
         if (Aibot::validateUserMessageLength($instanceName->stdClassMsg->content)) {
             $this->botMessageModel->setStatusMessage($instanceName->stdClassMsg->id, MessageStatus::REJECT);
             $instanceName->stdClassMsg->status_msg = MessageStatus::REJECT->value;
-            Log::alert("Message REJECT by -> validateUserMessageLength");
+            Log::notice("Message REJECT by -> validateUserMessageLength");
             // $answerFrom = $this->aiBot->prepareAnswerMsgWithValuation($validateUserMessageIsShort);
 
             (string)$msg_to_user = config()->get('botsmanagerconf.' . UsersMenu::cases()[$instanceName->stdClassUser->lang]->name . '.ERROR.msg_validate')
@@ -295,7 +295,8 @@ class BotsMessages extends Controller
                 $instanceName->stdClassMsg->message_id,
                 null
             );
-            Log::alert(print_r("memory_get_usage = " . memory_get_usage()));
+
+
 
         }
         //-------------- II ---USER'S LAST REPLY FORM AI-------------
@@ -463,6 +464,7 @@ class BotsMessages extends Controller
 //        echo "END START";
 //        Storage::append('myapp.log', date('H:i:s') . "botmessages started");
         Log::info("botmessages method start() finished");
+        Log::notice(print_r("memory_usage_Botmessage = " . memory_get_usage()));
         Log::channel('stderr')->alert("botmessages method FINISH");
 
 

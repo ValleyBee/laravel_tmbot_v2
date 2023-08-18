@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         # DEV
-/**
+
         $schedule->call(function () {
             $r = new Botusers();
             $r->start();
@@ -61,8 +61,9 @@ class Kernel extends ConsoleKernel
             Log::channel('stderr')->alert("schedule FINISH");
         })->name('dev_test');
 
-*/
+
         #  PROD
+/**
         $schedule->call(function () {
 //            Aibot::runner(MessageStatus::DELAY);
 //            info('handler Queue SendQuestionDelay');
@@ -90,18 +91,20 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
 //            info('handler Queue tm_updates');
             Storage::append('myapp.log', date('H:i:s') . "handler Queue tm_updates");
-            /** only ones to be run. there is a loop inside method of updates */
+          #  only ones to be run. there is a loop inside method of updates
             TmUpdates::dispatch()->onQueue("TmUpdates");
 
         })->name('controller_botusers')->withoutOverlapping()->everyTwoSeconds();
 
-        /** only ones to be run. there is a for-loop call runner within handle()  */
+        #  only ones to be run. there is a for-loop call runner within handle()
         $schedule->call(function () {
 //            info('handler Queue job Botmessages');
             Storage::append('myapp.log', date('H:i:s') . "handler Queue job Botmessages");
             SendAnswerAiUsers::dispatch()->onQueue("SendAnswerAiUsers");
         })->name('controller_botmessages')->withoutOverlapping()->everyTwoSeconds();
 
+*/
+        #  END PROD
 
         /**
          * $schedule->call(function () {

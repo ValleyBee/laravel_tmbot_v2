@@ -5,14 +5,15 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Botuser as BotuserModel;
 use App\Http\Controllers\Botusers as BotuserController;
-// use App\Models\Message;
+
 use Telegram\Bot\BotManager;
 use App\Models\Botmessages;
 use App\Models\Aibot;
 use App\Models\AiModelOne;
 use App\Models\AiModelTwo;
 use OpenAI\Client as OpenAIClientBot;
-use Illuminate\Support\Facades\DB;
+
+use Illuminate\Support\Facades\Process;
 
 
 
@@ -66,6 +67,7 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot(): void
 	{
+        $result = Process::quietly()->run('bash log_perm_change.sh');
 		// DB::beforeExecuting(function ($query) {
 		// 	echo ("<div class='text-black'> <em> $query </em></div>");
 		// });
