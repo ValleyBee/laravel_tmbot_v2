@@ -146,7 +146,7 @@ class Aibot extends Model
         // ];
 
 
-        $updateClientData = function (array $param, string $systemRole) use (&$modelData, $stdClassMsg): array {
+        $updateClientData = function (array $param, string $systemRole,string $userRole) use (&$modelData, $stdClassMsg): array {
             $modelData['messages'][0] = [
                 "role" => "system", 'content' => $systemRole,
             ];
@@ -154,7 +154,7 @@ class Aibot extends Model
                 "role" => "assistant", 'content' => $stdClassMsg->reply_from_ai ?? ''
             ];
             $modelData['messages'][2] = [
-                "role" => "user", 'content' =>  "Use language the questioner in your answer,the question is: ".$stdClassMsg->content
+                "role" => "user", 'content' =>  $userRole.$stdClassMsg->content
             ];
             $modelData['user'] = $stdClassMsg->botuser_id;
             foreach ($param as $key => $value) {
@@ -170,18 +170,22 @@ class Aibot extends Model
 //                ${'class_aitbot' . $stdClassMsg->botuser_id}
 //                ${'client' . $account} = OpenAI::client(config()->get('openai.payed_response.api_key'), config()->get('openai.payed_response.organization'));
                 ${'client' . $account} = OpenAI::client(config()->get('openai.free_response.api_key'), config()->get('openai.free_response.organization'));
-                $systemRole = config()->get('botsmanagerconf.' . 'ENG' . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard'); //    //UsersMenu::cases()[$stdClassUser->lang]->name
+                $roles_system_keyboard = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard');
+                $roles_system_content = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.roles_system_content');
+                $roles_user_content = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.roles_user_content');
+
+     //  'roles_user_content' => "Your answer translate to the questioner language.The question is: ",
+     //  roles_system_content' => " is the current date.You are an assistant that speaks like ",
                 $updateClientData(
                     [
                         'max_tokens' => 2000,
                     ],
-                    date('d F y'). 'is the date now.You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
+                    systemRole: date('d F y'). $roles_system_content . $roles_system_keyboard[$stdClassUser->model_type][0]['text'],
+                    userRole: $roles_user_content,
                 );
-
                 Storage::append('freemodel_last_session.log', date("d/m/Y H:i:s"));
                 Log::alert('freemodel_last_session');
                 Log::info('Make config for DELAY question to AI, by -> MessageStatus::cases');
-
 
                 /*session deleted. if you try using this you've got an error*/
 
@@ -198,12 +202,16 @@ class Aibot extends Model
             case ("NODELAY"):
                 ${'client' . $account} = OpenAI::client(config()->get('openai.payed_response.api_key'), config()->get('openai.payed_response.organization'));
 
-                $systemRole = config()->get('botsmanagerconf.' . 'ENG' . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard');
+                $roles_system_keyboard = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.REPLYMARKUP_MENU_INLINE' . '.inline_keyboard');
+                $roles_system_content = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.roles_system_content');
+                $roles_user_content = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.roles_user_content');
+
                 $updateClientData(
                     [
                         'max_tokens' => 1000,
                     ],
-                    date('d F y'). 'is the date now.You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
+                    systemRole: date('d F y'). $roles_system_content . $roles_system_keyboard[$stdClassUser->model_type][0]['text'],
+                    userRole: $roles_user_content,
                 );
                 Storage::append('paymodel_last_session.log', date("d/m/Y H:i:s"));
                 Log::info('Make config for NODELAY question to AI, by -> MessageStatus::cases');

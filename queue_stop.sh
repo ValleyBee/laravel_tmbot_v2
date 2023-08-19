@@ -7,6 +7,6 @@ sleep 1
 # crontab  cd /var/www/html/tmbot && sudo php artisan schedule:run >> /dev/null 2>&1
 cd /var/www/html/tmbot &&php artisan queue:prune-failed
 cd /var/www/html/tmbot && php artisan queue:prune-batches
-cd /var/www/html/tmbot && php artisan queue:work --stop-when-empty
+cd /var/www/html/tmbot && php artisan queue:work --queue=TmUpdates --stop-when-empty
 
 
