@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 // use App\Enums\Tmbot\Status;
@@ -83,7 +84,7 @@ class Botmessages extends Model
 
     public function getLastMsgWithStatusReplySetDone(Botmessages $messageModel): stdClass|null
     {
-        echo "METHOD getLastMsgIdWithStatusNull";
+
         $result = null;
         echo "transactionLevel " . DB::connection(DB::getDefaultConnection())->transactionLevel();
 
@@ -235,7 +236,7 @@ class Botmessages extends Model
         try {
             $msg_found = $this->find($id);
         } catch (QueryException $e) {
-            echo($e);
+            Log::error("getMsgById Exception : " . $e->getCode() . " : " . $e->getMessage());
         }
         if (is_null($msg_found)) {
             echo('message NOT FOUND error message');
@@ -258,7 +259,7 @@ class Botmessages extends Model
 //			echo (memory_get_usage());
             // dd($withStatus);
         } catch (QueryException $e) {
-            echo($e);
+            Log::error("getMessageByMsg_Id Exception : " . $e->getCode() . " : " . $e->getMessage());
         }
 
         if (is_null($msg_found)) {
@@ -281,7 +282,7 @@ class Botmessages extends Model
 
             // dd($withStatus);
         } catch (QueryException $e) {
-            echo($e);
+            Log::error("getMsgByUser_pk_id Exception : " . $e->getCode() . " : " . $e->getMessage());
         }
 
         if (is_null($msg_found)) {
@@ -311,7 +312,7 @@ class Botmessages extends Model
                 $updateStatus->update();
             });
         } catch (QueryException $e) {
-            echo($e);
+            Log::error("setMsgDoneWithReplay Exception : " . $e->getCode() . " : " . $e->getMessage());
         }
 
     }
@@ -330,7 +331,7 @@ class Botmessages extends Model
                 $updateStatus->update();
             });
         } catch (QueryException $e) {
-            echo($e);
+            Log::error("setStatusMessage Exception : " . $e->getCode() . " : " . $e->getMessage());
         }
     }
 
@@ -346,7 +347,7 @@ class Botmessages extends Model
             $message = $this->messageModel->all();
             $content = $message->orderBy('botuser_id')->orderBy('created_at', 'desc')->get();
         } catch (QueryException $e) {
-            echo($e);
+            Log::error("allMessages Exception : " . $e->getCode() . " : " . $e->getMessage());
         }
 
         return redirect();
@@ -368,7 +369,7 @@ class Botmessages extends Model
                 return null;
             }
         } catch (QueryException $e) {
-            echo $e;
+            Log::error("findIsMsgExistByMsg_id Exception : " . $e->getCode() . " : " . $e->getMessage());
         }
 
         echo date("d/m/Y H:i:s") . " " . "message exist MESSAGE ID: $message_id\n";
@@ -390,7 +391,7 @@ class Botmessages extends Model
             });
 
         } catch (QueryException $e) {
-            echo($e);
+            Log::error("storeOnlyNewTmMesssages Exception : " . $e->getCode() . " : " . $e->getMessage());
         }
         return $result->id;
     } // end of store

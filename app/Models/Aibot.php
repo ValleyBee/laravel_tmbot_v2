@@ -3,6 +3,7 @@
 namespace App\Models;
 
 
+use App\Enums\Messages\Status;
 use App\Http\Controllers\Aibots;
 use App\Http\Controllers\Botusers as BotUsersController;
 use App\Models\Botuser as BotUserModel;
@@ -146,7 +147,7 @@ class Aibot extends Model
         // ];
 
 
-        $updateClientData = function (array $param, string $systemRole,string $userRole) use (&$modelData, $stdClassMsg): array {
+        $updateClientData = function (array $param, string $systemRole, string $userRole) use (&$modelData, $stdClassMsg): array {
             $modelData['messages'][0] = [
                 "role" => "system", 'content' => $systemRole,
             ];
@@ -154,7 +155,7 @@ class Aibot extends Model
                 "role" => "assistant", 'content' => $stdClassMsg->reply_from_ai ?? ''
             ];
             $modelData['messages'][2] = [
-                "role" => "user", 'content' =>  $userRole.$stdClassMsg->content
+                "role" => "user", 'content' => $userRole . $stdClassMsg->content
             ];
             $modelData['user'] = $stdClassMsg->botuser_id;
             foreach ($param as $key => $value) {
@@ -174,13 +175,13 @@ class Aibot extends Model
                 $roles_system_content = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.roles_system_content');
                 $roles_user_content = config()->get('botsmanagerconf.' . UsersMenu::cases()[$stdClassUser->lang]->name . '.INFO.roles_user_content');
 
-     //  'roles_user_content' => "Your answer translate to the questioner language.The question is: ",
-     //  roles_system_content' => " is the current date.You are an assistant that speaks like ",
+                //  'roles_user_content' => "Your answer translate to the questioner language.The question is: ",
+                //  roles_system_content' => " is the current date.You are an assistant that speaks like ",
                 $updateClientData(
                     [
                         'max_tokens' => 2000,
                     ],
-                    systemRole: date('d F y'). $roles_system_content . $roles_system_keyboard[$stdClassUser->model_type][0]['text'],
+                    systemRole: date('d F y') . $roles_system_content . $roles_system_keyboard[$stdClassUser->model_type][0]['text'],
                     userRole: $roles_user_content,
                 );
                 Storage::append('freemodel_last_session.log', date("d/m/Y H:i:s"));
@@ -210,7 +211,7 @@ class Aibot extends Model
                     [
                         'max_tokens' => 1000,
                     ],
-                    systemRole: date('d F y'). $roles_system_content . $roles_system_keyboard[$stdClassUser->model_type][0]['text'],
+                    systemRole: date('d F y') . $roles_system_content . $roles_system_keyboard[$stdClassUser->model_type][0]['text'],
                     userRole: $roles_user_content,
                 );
                 Storage::append('paymodel_last_session.log', date("d/m/Y H:i:s"));
@@ -256,7 +257,6 @@ class Aibot extends Model
                     "role" => "user", 'content' => $new_langConf . ":" . $stdClassMsg->content
                 ];
          * */
-
 
 
         echo $stdClassMsg->message_id . "\n";
@@ -331,25 +331,30 @@ class Aibot extends Model
 
 
 //			$request = $this->openaiclientbot->chat()->create($modelData->data);
+
         try {
+            $response_flag = true;
             $response = ${'client' . $account}->chat()->create($modelData);
             Log::info('RESPONSE FROM OPENAI OK, by ->  client -> chat ');
             echo "RESPONSE FROM OPENAI OK";
         } catch (OpenAiTransporterException $e) {
-            echo "OpenAiTransporterException " . $e->getMessage();
-//            exit();
+            $response_flag = false;
+            Log::error("OpenAiTransporterException  : " . $e->getCode() . " : " . $e->getMessage());
         } catch (OpenAiErrorException $e2) {
-            echo "OpenAiErrorException " . $e2->getMessage();
-//            exit();
+            $response_flag = false;
+            Log::error("OpenAiErrorException  : " . $e->getCode() . " : " . $e->getMessage());
         }
         $responseFields = $response->toArray();
 
-        Storage::append('myapp.log', date('H:i:s') . $responseFields["choices"][0]["message"]["content"]);
+//        Storage::append('myapp.log', date('H:i:s') . $responseFields["choices"][0]["message"]["content"]);
+        if ($response_flag) {
+            self::updateWithReply(
+                instanceName: $instanceName,
+                stdClassMsg: $stdClassMsg,
+                responseFields: $responseFields,
+                MessageStatus: MessageStatus::REPLY);
+        }
 
-
-        self::updateWithReply($instanceName, $stdClassMsg, $responseFields);
-
-        //        return $response->toArray();
         Log::channel('stderr')->info("clientAiApi finished");
         Log::info("clientAiApi finished");
         Log::notice(print_r("memory_usage_Aibot = " . memory_get_usage()));
@@ -444,17 +449,16 @@ class Aibot extends Model
     }
 
 
-    public function updateWithReply(Aibot $instanceName, stdClass $stdClassMsg, array $responseFields)
+    public function updateWithReply(Aibot $instanceName, stdClass $stdClassMsg, array $responseFields, MessageStatus $MessageStatus)
     {
         if ($this->botMessageModel === null) {
             $this->botMessageModel = app('botmessage');
         }
-
         try {
-            DB::transaction(function () use ($instanceName, $stdClassMsg, $responseFields) {
+            DB::transaction(function () use ($instanceName, $stdClassMsg, $responseFields, $MessageStatus) {
                 $updatebyReplay = $this->botMessageModel->where('message_id', $stdClassMsg->message_id)->first();
-                $updatebyReplay->reply_from_ai = $responseFields["choices"][0]["message"]["content"];
-                $updatebyReplay->status_msg = MessageStatus::REPLY;
+                $updatebyReplay->reply_from_ai = $responseFields["choices"][0]["message"]["content"] ?? "";
+                $updatebyReplay->status_msg = $MessageStatus->value;
                 $updatebyReplay->update();
                 $deleteDone = $instanceName->where('message_id', $stdClassMsg->message_id)->first();
                 $deleteDone->delete();

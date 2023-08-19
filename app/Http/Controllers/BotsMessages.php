@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Messages\Status;
 use Illuminate\Http\Request;
 
 // use Telegram\Bot\Laravel\Facades\Telegram;
@@ -426,12 +427,19 @@ class BotsMessages extends Controller
             case ("REPLY"):
 //                    $replyToSendTmbot = $this->botMessageModel->getLastMsgWithStatusReplySetDone($this->botMessageModel);
                 if ($instanceName->stdClassMsg) {
-                    $this->botUsersController->sendAnswerToUserTmbot($instanceName->stdClassMsg);
+                    $feedbackMessage = $this->botUsersController->sendAnswerToUserTmbot($instanceName->stdClassMsg);
                     Log::info("BotsMessages,Send answer to tm users, by -> sendAnswerToUserTmbot");
-                    $this->botMessageModel->setStatusMessage($instanceName->stdClassMsg->id, MessageStatus::DONE);
-                    Log::info("BotsMessages,Set status DONE message, by -> >setStatusMessage");
 
-//                    (int)$countSymbols = mb_strlen($instanceName->stdClassMsg->content);
+                    if ($feedbackMessage) {
+                        $this->botMessageModel->setStatusMessage($instanceName->stdClassMsg->id, MessageStatus::DONE);
+                        Log::info("BotsMessages,set status message DONE, by >setStatusMessage");
+                    } else {
+                        Log::alert("BotsMessages,rollback message status to REPLAY cause it was not send, by >sendAnswerToUserTmbot");
+                        $this->botMessageModel->setStatusMessage($instanceName->stdClassMsg->id, MessageStatus::REPLY);
+                    }
+
+
+//                    (int)$countSymbols = mb_strlen($instanceName->stdClassMsg->content); // old way
                     (int)$countSymbols = 1;
                     $this->botUserModel->setUserLimit($instanceName->stdClassUser->id, $countSymbols);
 

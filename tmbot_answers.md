@@ -174,6 +174,95 @@ my_chat_member: array:5 [▼
 "can_manage_voice_chats" => true
 ]
 
+# RESPONSE WHEN MESSAGE SENT SUCCESSFULLY
+Telegram\Bot\Objects\ResponseObject^ {#1705 // app/Http/Controllers/Botusers.php:501
+#fields: Illuminate\Support\Collection^ {#1701
+#items: array:6 [
+"message_id" => 1692
+"from" => array:4 [
+"id" => 5219853323
+"is_bot" => true
+"first_name" => "Test_1_ChatBot"
+"username" => "MyFirstHHBot"
+]
+"chat" => array:5 [
+"id" => 909149522
+"first_name" => "Vаlentyn"
+"last_name" => "B"
+"username" => "ValentynBershatsky"
+"type" => "private"
+]
+"date" => 1692457217
+"reply_to_message" => array:5 [
+"message_id" => 1291
+"from" => array:6 [
+"id" => 909149522
+"is_bot" => false
+"first_name" => "Vаlentyn"
+"last_name" => "B"
+"username" => "ValentynBershatsky"
+"language_code" => "en"
+]
+"chat" => array:5 [
+"id" => 909149522
+"first_name" => "Vаlentyn"
+"last_name" => "B"
+"username" => "ValentynBershatsky"
+"type" => "private"
+]
+"date" => 1692261526
+"text" => "2⃣ Яка відстань Землі від Сонця,сьогодні 17 August 23"
+]
+"text" => """
+ID:1291\n
+🅰На сьогоднішній день, 17 серпня, відстань між Землею і Сонцем становить приблизно 149,6 мільйонів кілометрів.
+"""
+]
+#escapeWhenCastingToString: false
+}
+message_id: 1692
+from: array:4 [
+"id" => 5219853323
+"is_bot" => true
+"first_name" => "Test_1_ChatBot"
+"username" => "MyFirstHHBot"
+]
+chat: array:5 [
+"id" => 909149522
+"first_name" => "Vаlentyn"
+"last_name" => "B"
+"username" => "ValentynBershatsky"
+"type" => "private"
+]
+date: 1692457217
+reply_to_message: array:5 [
+"message_id" => 1291
+"from" => array:6 [
+"id" => 909149522
+"is_bot" => false
+"first_name" => "Vаlentyn"
+"last_name" => "B"
+"username" => "ValentynBershatsky"
+"language_code" => "en"
+]
+"chat" => array:5 [
+"id" => 909149522
+"first_name" => "Vаlentyn"
+"last_name" => "B"
+"username" => "ValentynBershatsky"
+"type" => "private"
+]
+"date" => 1692261526
+"text" => "2⃣ Яка відстань Землі від Сонця,сьогодні 17 August 23"
+]
+text: """
+ID:1291\n
+🅰На сьогоднішній день, 17 серпня, відстань між Землею і Сонцем становить приблизно 149,6 мільйонів кілометрів.
+"""
+}
+
+
+------------------------
 
 # How to define an empty object in PHP
 # https://stackoverflow.com/questions/1434368/how-to-define-an-empty-object-in-php

@@ -109,7 +109,7 @@ class Botusers extends Controller
 
         // dd($menu);
         // dd($menu['keyboard'][2][0]['text']);
-        echo "<font color='red'>" . "CLASS TEST!" . "</font>";
+
 
 
 //       dd(storage_path().'scheduler-output.log');
@@ -200,7 +200,7 @@ class Botusers extends Controller
             Log::info("Botusers,TM RESPONSE OK");
             Log::channel('stderr')->info("Botusers,TM RESPONSE OK");
         } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
-            Log::alert("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
+            Log::error("Botusers,Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
 //            $responseFromTmbot = null;
         }
         echo "\n";
@@ -486,18 +486,18 @@ class Botusers extends Controller
         // exit();
         $tmBotModel = self::getModelTmBot();
         try {
-            $this->telegram->bot($tmBotModel)->sendMessage([
+           $feedbackMessage = $this->telegram->bot($tmBotModel)->sendMessage([
                 'chat_id' => $replyToSendTmbot->botuser_id,
                 'reply_to_message_id' => $replyToSendTmbot->message_id,
                 'text' => "ID:" . $replyToSendTmbot->message_id . "\n" . "\u{1F170}" . $replyToSendTmbot->reply_from_ai,
                 'allow_sending_without_reply' => true
             ]);
-        } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
-            echo "Telegram Exception : " . $e->getCode() . " : " . $e->getMessage();
-            exit();
-        }
 
-        return true;
+        } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
+          Log::error("Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
+          return false;
+        }
+         return true;
     }
 
     public
@@ -525,10 +525,10 @@ class Botusers extends Controller
         }
 
         try {
-            $this->telegram->bot($tmBotModel)->sendMessage($fields);
+            $feedbackMessage =  $this->telegram->bot($tmBotModel)->sendMessage($fields);
         } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
-            echo "<font color='red'>" . "Telegram Exception : " . $e->getCode() . " : " . $e->getMessage() . "</font>";
-            exit();
+            Log::error("Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
+            return false;
         }
 
         return true;
@@ -556,8 +556,8 @@ class Botusers extends Controller
         try {
             $this->telegram->bot($tmBotModel)->deleteMessage($fields);
         } catch (ConnectException|TelegramResponseException|TelegramSDKException $e) {
-            echo "Telegram Exception : " . $e->getCode() . " : " . $e->getMessage();
-            exit();
+            Log::error("Telegram Exception : " . $e->getCode() . " : " . $e->getMessage());
+            return false;
         }
 
         return true;
