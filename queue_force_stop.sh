@@ -3,7 +3,7 @@
 cd /home/user
 (crontab -u $(whoami) -r)
 kill $(ps aux | grep '=schedule:run' | grep -v grep | awk '{print $2}')
-sleep 1
+sleep 10
 # crontab  cd /var/www/html/tmbot && sudo php artisan schedule:run >> /dev/null 2>&1
 
 kill $(ps aux | grep '=TmUpdates' | grep -v grep | awk '{print $2}')
