@@ -154,7 +154,7 @@ class Aibot extends Model
                 "role" => "assistant", 'content' => $stdClassMsg->reply_from_ai ?? ''
             ];
             $modelData['messages'][2] = [
-                "role" => "user", 'content' =>  date('d F y')." is the date now,my the question is: ".$stdClassMsg->content
+                "role" => "user", 'content' =>  "Use language the questioner in your answer,the question is: ".$stdClassMsg->content
             ];
             $modelData['user'] = $stdClassMsg->botuser_id;
             foreach ($param as $key => $value) {
@@ -175,7 +175,7 @@ class Aibot extends Model
                     [
                         'max_tokens' => 2000,
                     ],
-                    'You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
+                    date('d F y'). 'is the date now.You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
                 );
 
                 Storage::append('freemodel_last_session.log', date("d/m/Y H:i:s"));
@@ -203,7 +203,7 @@ class Aibot extends Model
                     [
                         'max_tokens' => 1000,
                     ],
-                    'You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
+                    date('d F y'). 'is the date now.You are an assistant that speaks like ' . $systemRole[$stdClassUser->model_type][0]['text'],
                 );
                 Storage::append('paymodel_last_session.log', date("d/m/Y H:i:s"));
                 Log::info('Make config for NODELAY question to AI, by -> MessageStatus::cases');
