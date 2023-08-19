@@ -1,7 +1,19 @@
 #! /bin/sh
 cd /var/www/html/tmbot
-echo "Start cleaning failed jobs"
+echo "Start cleaning queue:work and cache and conf"
 
+cd /var/www/html/tmbot && php artisan queue:clear --queue=TmUpdates
+cd /var/www/html/tmbot && php artisan queue:clear --queue=SendAnswerAiUsers
+cd /var/www/html/tmbot && php artisan queue:clear --queue=model_free_one
+cd /var/www/html/tmbot && php artisan queue:clear --queue=model_pay_one
+
+
+cd /var/www/html/tmbot && php artisan cache:clear
+cd /var/www/html/tmbot && php artisan conf:clear
+cd /var/www/html/tmbot && php artisan view:clear
+cd /var/www/html/tmbot && php artisan queue:clear
+cd /var/www/html/tmbot && php artisan queue:flush
+cd /var/www/html/tmbot && php artisan queue:restart
 cd /var/www/html/tmbot && php artisan queue:prune-failed
 cd /var/www/html/tmbot && php artisan queue:prune-batches
 
