@@ -11,12 +11,10 @@ kill $(ps aux | grep '=SendAnswerAiUsers' | grep -v grep | awk '{print $2}')
 kill $(ps aux | grep '=model_free_one' | grep -v grep | awk '{print $2}')
 kill $(ps aux | grep '=model_pay_one' | grep -v grep | awk '{print $2}')
 
-
 cd /var/www/html/tmbot && php artisan queue:clear --queue=TmUpdates
 cd /var/www/html/tmbot && php artisan queue:clear --queue=SendAnswerAiUsers
 cd /var/www/html/tmbot && php artisan queue:clear --queue=model_free_one
 cd /var/www/html/tmbot && php artisan queue:clear --queue=model_pay_one
-
 
 cd /var/www/html/tmbot && php artisan cache:clear
 cd /var/www/html/tmbot && php artisan conf:clear

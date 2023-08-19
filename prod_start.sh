@@ -21,7 +21,6 @@ echo "Start queue:work --queue==model_pay_one"
 
 # crontab  cd /var/www/html/tmbot &&  php artisan schedule:run >> /dev/null 2>&1
 
-
 #kill $(ps aux | grep '=TmUpdates' | grep -v grep | awk '{print $2}')
 
 sleep 1

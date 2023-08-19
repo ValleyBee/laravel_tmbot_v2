@@ -18,7 +18,6 @@ cd /var/www/html/tmbot && php artisan queue:prune-failed
 cd /var/www/html/tmbot && php artisan queue:prune-batches
 
 sleep 1
-
 echo "Start queue:work --queue=TmUpdates"
 cd /var/www/html/tmbot && nohup php artisan queue:work --queue=TmUpdates --daemon  > /dev/null 2>&1 &
 sleep 1
