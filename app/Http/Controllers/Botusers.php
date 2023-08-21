@@ -141,8 +141,7 @@ class Botusers extends Controller
     {
 
         Log::channel('stderr')->notice("botusers START");
-        Log:
-        info("botusers method start(),started");
+            info("botusers method start(),started");
 //        Storage::append('myapp.log', date('H:i:s') . "botusers started");
 //        echo " START ".time()."\n";
 
