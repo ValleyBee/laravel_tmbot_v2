@@ -131,29 +131,38 @@ class Botuser extends Model
     }
 
 
-    public function getUserStatus(int $id): int
+    public function getCountUsersWithStatus(UsersStatus $status)
     {
-        (object)$user_found = null;
+        $user_status_result = null;
         if ($this->botUserModel === null) {
             $this->botUserModel = app('botuser');
             // $this->botUserModel = resolve(Botuser::class);
         }
         try {
-            (object)$user_found = $this->botUserModel->select('status_us')->find($id);
+            $user_status_result = $this->botUserModel->select(
+                'id',
+                'created_at',
+                'updated_at',
+                'botuser_id',
+                'status_usr',
+                'model_type',
+                'limit_req_num',
+                'lang')->where('status_usr',$status->value)->get();
+
         } catch (QueryException $e) {
             echo $e;
         }
 
-        if (is_null($user_found)) {
-            Log::info( "USER NOT FOUND getUserStatus");
-            return abort(404);
+        if (is_null($user_status_result)) {
+//            Log::info( "USER NOT FOUND getUserStatus");
+//            return abort(404);
             // } else {
             // 	(object)$user_found = (object)$user_found->toArray();
             // 	echo "<pre>";
             // 	echo "user status \n";
             // 	echo "</pre>";
         }
-        return $user_found->status_usr;
+        return $user_status_result;
     }
 
 

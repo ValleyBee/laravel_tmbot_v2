@@ -19,4 +19,4 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
-/app/Console/Kernel.php
+#/app/Console/Kernel.php

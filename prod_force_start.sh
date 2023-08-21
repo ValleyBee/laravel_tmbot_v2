@@ -6,6 +6,7 @@ cd /var/www/html/tmbot && php artisan queue:clear --queue=TmUpdates
 cd /var/www/html/tmbot && php artisan queue:clear --queue=SendAnswerAiUsers
 cd /var/www/html/tmbot && php artisan queue:clear --queue=model_free_one
 cd /var/www/html/tmbot && php artisan queue:clear --queue=model_pay_one
+cd /var/www/html/tmbot && php artisan queue:clear --queue=SendMailToAdmin
 
 
 cd /var/www/html/tmbot && php artisan cache:clear
@@ -29,6 +30,11 @@ echo "Start queue:work --queue=model_free_one"
 sleep 1
 echo "Start queue:work --queue==model_pay_one"
  cd /var/www/html/tmbot && nohup php artisan queue:work --queue=model_pay_one --daemon  > /dev/null 2>&1 &
+sleep 1
+echo "Start queue:work --queue==SendMailToAdmin"
+ cd /var/www/html/tmbot && nohup php artisan queue:work --queue=SendMailToAdmin --daemon  > /dev/null 2>&1 &
+
+
 
 # crontab  cd /var/www/html/tmbot &&  php artisan schedule:run >> /dev/null 2>&1
 

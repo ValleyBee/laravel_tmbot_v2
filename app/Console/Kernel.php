@@ -7,6 +7,7 @@ use App\Enums\Messages\Status as MessageStatus;
 use App\Http\Controllers\BotsMessages;
 use App\Http\Controllers\Botusers;
 use App\Jobs\SendAnswerAiUsers;
+use App\Jobs\SendMailToAdmin;
 use App\Jobs\SendQuestionNoDelay;
 use App\Jobs\SendQuestionDelay;
 use App\Jobs\TmUpdates;
@@ -58,6 +59,12 @@ class Kernel extends ConsoleKernel
                 ->dispatch();
             Log::channel('stderr')->alert("schedule FINISH");
         })->name('dev_test');
+
+        $schedule->call(function () {
+//            info('handler Queue SendMailToAdmin');
+            SendMailToAdmin::dispatch()->onQueue("SendMailToAdmin");
+        })->name('SendMailToAdmin')->withoutOverlapping();
+
 */
         #  PROD
 
@@ -99,6 +106,12 @@ class Kernel extends ConsoleKernel
             Storage::append('myapp.log', date('H:i:s') . "handler Queue job Botmessages");
             SendAnswerAiUsers::dispatch()->onQueue("SendAnswerAiUsers");
         })->name('controller_botmessages')->withoutOverlapping()->everyTwoSeconds();
+
+$schedule->call(function () {
+//            info('handler Queue SendMailToAdmin');
+SendMailToAdmin::dispatch()->onQueue("SendMailToAdmin");
+})->name('controller_SendMailToAdmin')->withoutOverlapping()->everyMinute();
+
 
 
         #  END PROD
