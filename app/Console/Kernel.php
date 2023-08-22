@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         # DEV
-
+/**
         $schedule->call(function () {
             $r = new Botusers();
             $r->start();
@@ -65,7 +65,7 @@ class Kernel extends ConsoleKernel
             SendMailToAdmin::dispatch()->onQueue("SendMailToAdmin");
         })->name('SendMailToAdmin')->withoutOverlapping();
 
-
+*/
         #  PROD
 
         $schedule->call(function () {

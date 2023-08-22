@@ -26,6 +26,7 @@ use OpenAI;
 use OpenAI\Exceptions\TransporterException as OpenAiTransporterException;
 use OpenAI\Exceptions\ErrorException as OpenAiErrorException;
 use stdClass;
+use Telegram\Bot\Objects\ResponseObject;
 
 
 class Aibot extends Model
@@ -40,6 +41,7 @@ class Aibot extends Model
     protected ?BotMessageModel $botMessageModel = null;
     protected ?BotUsersController $botUsersController = null;
     protected ?BotUserModel $botUserModel = null;
+
     protected array $NODELAY = [
         'model' => 'gpt-3.5-turbo',
         'temperature' => 0.1,
@@ -209,7 +211,7 @@ class Aibot extends Model
 
                 $updateClientData(
                     [
-                        'max_tokens' => 1000,
+                        'max_tokens' => 2000,
                     ],
                     systemRole: date('d F y') . $roles_system_content . $roles_system_keyboard[$stdClassUser->model_type][0]['text'],
                     userRole: $roles_user_content,
@@ -264,7 +266,7 @@ class Aibot extends Model
         echo $stdClassMsg->reply_from_ai . "\n";;
         echo "USER_ID :" . $modelData['user'] . "\n";;
 //        print_r($modelData->data['messages'][0]);
-        var_dump($modelData);
+//        var_dump($modelData);  # DEV
 
         /********************FAKE RESPONSE*********************/
         // $client = ClientFake::fake([
@@ -331,6 +333,7 @@ class Aibot extends Model
 
         try {
             $response_flag = true;
+            $response = null;
             $response = ${'client' . $account}->chat()->create($modelData);
 
             Log::info('RESPONSE FROM OPENAI OK, by ->  client -> chat ');
@@ -338,19 +341,29 @@ class Aibot extends Model
         } catch (OpenAiTransporterException $e) {
             $response_flag = false;
             Log::error("OpenAiTransporterException  : " . $e->getCode() . " : " . $e->getMessage());
+            Log::channel('stderr')->alert("OpenAiTransporterException" . $e->getCode() . " : " . $e->getMessage());
         } catch (OpenAiErrorException $e2) {
             $response_flag = false;
-            Log::error("OpenAiErrorException  : " . $e->getCode() . " : " . $e->getMessage());
+            Log::error("OpenAiErrorException  : " . $e2->getCode() . " : " . $e2->getMessage());
+            Log::channel('stderr')->alert("OpenAiErrorException" . $e2->getCode() . " : " . $e2->getMessage());
         }
-        $responseFields = $response->toArray();
-
+        if ($response !== null) {
+            $responseFields = $response->toArray();
+        }
 //        Storage::append('myapp.log', date('H:i:s') . $responseFields["choices"][0]["message"]["content"]);
         if ($response_flag) {
             self::updateWithReply(
                 instanceName: $instanceName,
                 stdClassMsg: $stdClassMsg,
+                MessageStatus: MessageStatus::REPLY,
                 responseFields: $responseFields,
-                MessageStatus: MessageStatus::REPLY);
+            );
+        } else {
+            self::updateWithPending(
+                instanceName: $instanceName,
+                stdClassMsg: $stdClassMsg,
+                MessageStatus: MessageStatus::PENDING,
+            );
         }
 
         Log::channel('stderr')->info("clientAiApi finished");
@@ -417,7 +430,6 @@ class Aibot extends Model
         return $latest;
     }
 
-
     public function deleteQuestionAi(int $id): void
     {
         try {
@@ -428,7 +440,6 @@ class Aibot extends Model
         }
 
     }
-
     public function setStatusQuestionAi(int $id, MessageStatus $MessageStatus)
     {
         if ($this->aiBot === null) {
@@ -446,8 +457,7 @@ class Aibot extends Model
 
     }
 
-
-    public function updateWithReply(Aibot $instanceName, stdClass $stdClassMsg, array $responseFields, MessageStatus $MessageStatus)
+    public function updateWithReply(Aibot $instanceName, stdClass $stdClassMsg, MessageStatus $MessageStatus, array $responseFields = null)
     {
         if ($this->botMessageModel === null) {
             $this->botMessageModel = app('botmessage');
@@ -455,7 +465,7 @@ class Aibot extends Model
         try {
             DB::transaction(function () use ($instanceName, $stdClassMsg, $responseFields, $MessageStatus) {
                 $updatebyReplay = $this->botMessageModel->where('message_id', $stdClassMsg->message_id)->first();
-                $updatebyReplay->reply_from_ai = $responseFields["choices"][0]["message"]["content"] ?? "";
+                $updatebyReplay->reply_from_ai = $responseFields["choices"][0]["message"]["content"] ?? '';
                 $updatebyReplay->status_msg = $MessageStatus->value;
                 $updatebyReplay->update();
                 $deleteDone = $instanceName->where('message_id', $stdClassMsg->message_id)->first();
@@ -467,6 +477,23 @@ class Aibot extends Model
         }
 //        return $result->id;
     } // end of store
+
+    public function updateWithPending(Aibot $instanceName, stdClass $stdClassMsg, MessageStatus $MessageStatus)
+    {
+
+        try {
+            DB::transaction(function () use ($instanceName, $stdClassMsg, $MessageStatus) {
+                $updatebyPending = $instanceName->where('message_id', $stdClassMsg->message_id)->first();
+                $updatebyPending->status_msg = $MessageStatus->value;
+                $updatebyPending->update();
+            });
+
+        } catch (QueryException $e) {
+            echo $e;
+        }
+//        return $result->id;
+    } // end of store
+
 
     public function storeQuestionAi(stdClass $stdClassMsg)
     {
