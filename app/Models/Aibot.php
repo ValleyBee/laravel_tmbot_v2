@@ -312,8 +312,6 @@ class Aibot extends Model
 ]
 
 */
-
-
         // $client = $this->openaiclientbot->factory()
         // 	->withBaseUri('https://api.openai.com/v1/chat/completions')
         // 	->withApiKey('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')
@@ -329,12 +327,12 @@ class Aibot extends Model
 
 */
 
-
 //			$request = $this->openaiclientbot->chat()->create($modelData->data);
 
         try {
             $response_flag = true;
             $response = ${'client' . $account}->chat()->create($modelData);
+
             Log::info('RESPONSE FROM OPENAI OK, by ->  client -> chat ');
             echo "RESPONSE FROM OPENAI OK";
         } catch (OpenAiTransporterException $e) {

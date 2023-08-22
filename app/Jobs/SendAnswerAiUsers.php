@@ -34,7 +34,7 @@ class SendAnswerAiUsers implements ShouldQueue
     public function handle(): void
      {
          Log::info('handler Queue job SendAnswerAiUsers started');
-         for ($i=0 ; $i<=10; $i++) {
+         for ($i=0 ; $i<=3; $i++) {
 //             info('handler Queue job BotsMessage runner REPLY started');
              Storage::append('myapp.log', date('H:i:s') . "handler Queue job BotsMessage runner REPLY started");
              BotsMessages::runner(MessageStatus::REPLY);
@@ -45,7 +45,7 @@ class SendAnswerAiUsers implements ShouldQueue
              Storage::append('myapp.log', date('H:i:s') . "handler Queue job BotsMessage runner DELAY started");
              BotsMessages::runner(MessageStatus::DELAY);
 //             info('handler Queue job BotsMessage runner all job fineshed');
-             Storage::append('myapp.log', date('H:i:s') . "handler Queue job BotsMessage runner all job fineshed");
+//             Storage::append('myapp.log', date('H:i:s') . "handler Queue job BotsMessage runner all job fineshed");
              usleep(2 * 5000); # 2 * 1000 for two miliseconds:
          }
          Log::info('handler Queue job SendAnswerAiUsers fineshed');
