@@ -11,7 +11,7 @@
 
 <body>
 	<nav class="navbar navbar-expand-lg navbar-light navbar-fixed-top" style=" background-color: #e3f2fd;margin-bottom: 50px;">
-		<a class="navbar-brand" href="#">Telegram</a>
+		<a class="navbar-brand" href="#">Telegram_AI_V2</a>
 		<div class="collapse navbar-collapse">
 			<ul class="navbar-nav mr-auto">
 				<li class="nav-item">

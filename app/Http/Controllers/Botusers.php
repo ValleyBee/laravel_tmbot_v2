@@ -16,14 +16,22 @@ use GuzzleHttp\Exception\ConnectException;
 use Illuminate\Support\Facades\Log;
 use Telegram\Bot\BotManager;
 use Telegram\Bot\Commands\CommandHandler;
-use Telegram\Bot\Helpers\Update;
+use Telegram\Bot\Commands;
+use Telegram\Bot\Commands\CommandBus;
+use Telegram\Bot\Helpers;
+use Telegram\Bot\Events;
+use Telegram\Bot\Commands\Listeners;
+
+
+use Telegram\Bot\Testing\Responses as FakeResponse;
 
 use Telegram\Bot\Exceptions\TelegramResponseException;
 use Telegram\Bot\Exceptions\TelegramSDKException;
 use Telegram\Bot\Laravel\Facades\Telegram;
 use Telegram\Bot\Objects\ResponseObject;
 use stdClass;
-
+use App\Console\Commands\MyTelegramCommand;
+use Telegram\Bot\Objects\Keyboard\KeyboardButton;
 //use App\Jobs\SendQuestionAiDelay;
 
 
@@ -36,8 +44,6 @@ class Botusers extends Controller
 
     public function __construct()
     {
-//        echo "THIS IS BOTUSERS CLASS";
-
 
     }
 
@@ -168,8 +174,8 @@ class Botusers extends Controller
         }
 
         $tmBotModel = $this->getModelTmBot();
-        (object)$getLastRecordUpdate_id = $this->botMessageModel->getLastRecordUpdate_id();
-
+    (object)$getLastRecordUpdate_id = $this->botMessageModel->getLastRecordUpdate_id();
+        (object)$getLastRecordUpdate_id->update_id= null;
 
 
         try {
@@ -187,7 +193,83 @@ class Botusers extends Controller
 
             $responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates(['offset' => $getLastRecordUpdate_id->update_id]);
 
-//            var_dump($responseFromTmbot);
+            $commandHandler= new CommandHandler( $this->telegram->bot($tmBotModel));
+            $listCommand = $commandHandler->getCommands();
+
+            foreach ($listCommand as $key => $value){
+                Log::channel('stderr')->info('listCommand',[$key, $value]);
+
+            }
+
+
+
+            $this->telegram->bot($tmBotModel)->onUpdate('test1');
+
+             $user = FakeResponse\Payload::create()->user();
+            $message = FakeResponse\Payload::create()->message();
+            $update = FakeResponse\Payload::create()->update();
+
+
+
+
+
+//            $command = $this->telegram->bot($tmBotModel)->command('first',new MyTelegramCommand());
+//            var_dump($command);
+
+//            $commandBus = new CommandBus($this->telegram->bot($tmBotModel));
+
+
+
+
+//            $this->responseFromTmbot =
+              $resultFake =  ResponseObject::factory()->faker();
+//            $this->responseFromTmbot::factory();
+//            Log::channel('stderr')->info('responseFromTmbot',[$resultFake]);
+
+            $keyboard = KeyboardButton::make()->row([
+                    ['text' => 'Test', 'callback_data' => 'data'],
+                  ['text' => 'Btn 2', 'callback_data' => 'data_from_btn2'],]
+                );
+
+
+
+            $cnt = count($responseFromTmbot) - 1;
+            for ($y = $cnt; $y >= 0; $y--) {
+               $result1 = Helpers\Update::find($responseFromTmbot[$cnt])->messageType();
+               $result2 = Helpers\Update::find($responseFromTmbot[$cnt])->type();
+
+                $result_UpdateEvent = new Events\UpdateEvent($this->telegram->bot($tmBotModel),$responseFromTmbot[$cnt]);
+//                var_dump($result_UpdateEvent->update);
+                $result_Listener = new Listeners\ProcessCommand();
+                $result_Listener->handle($result_UpdateEvent);
+                $commandHandler->processCommand($responseFromTmbot[$cnt]);
+
+                Log::channel('stderr')->info('Message type:',[$result1,$result2]);
+
+                switch ($result2) {
+                    case("callback_query"):
+
+                        break;
+                    case("message"):
+
+                        break;
+                }
+
+                $this->telegram->bot($tmBotModel)->onUpdate('first');
+//                //function (){
+//                    Log::channel('stderr')->info('responseFromTmbot',['CLOSURE']);
+//                });
+
+//                Log::channel('stderr')->info('responseFromTmbot',['']);
+
+//                $result = $commandHandler->parseCommands($responseFromTmbot[$cnt]);
+//                $result = $command->handler($responseFromTmbot[$cnt]);
+//                Commands::->resolveCommand('first',$responseFromTmbot[$cnt]);
+//                $command->execute('first',$responseFromTmbot[$cnt],[]);
+
+//                                var_dump($result);
+            }
+
             /**
              * $updates = new Update($responseFromTmbot[0]);
              * echo $updates->messageType();
