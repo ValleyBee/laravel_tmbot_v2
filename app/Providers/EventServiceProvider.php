@@ -2,12 +2,18 @@
 
 namespace App\Providers;
 
+use App\Events\MessageProcess;
+use App\Events\NewUser;
+use App\Events\UserProcess;
+use App\Listeners\createNewUser;
+use App\Listeners\MessageHandler;
+use App\Listeners\UsersHandler;
+
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
-use App\Events\LoginHistory;
-use App\Listeners\storeUserLoginHistory;
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -20,9 +26,16 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        LoginHistory::class => [
-            StoreUserLoginHistory::class,
-        ]
+        NewUser::class => [
+            createNewUser::class
+        ],
+        UserProcess::class => [
+            UsersHandler::class
+        ],
+        MessageProcess::class => [
+            MessageHandler::class
+        ],
+
     ];
 
     /**

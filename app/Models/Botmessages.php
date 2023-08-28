@@ -8,6 +8,7 @@ use App\Http\Controllers\BotsMessages;
 use App\Http\Helpers\ResponseMessages;
 use App\Http\Helpers\ResponseCallBackQueryMessages;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;

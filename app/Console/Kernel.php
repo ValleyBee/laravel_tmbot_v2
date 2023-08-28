@@ -6,6 +6,7 @@ use App\Enums\Messages\Status;
 use App\Enums\Messages\Status as MessageStatus;
 use App\Http\Controllers\BotsMessages;
 use App\Http\Controllers\Botusers;
+use App\Http\Controllers\V2\Botusers as Botusers_v2;
 use App\Jobs\SendAnswerAiUsers;
 use App\Jobs\SendMailToAdmin;
 use App\Jobs\SendQuestionNoDelay;
@@ -38,6 +39,12 @@ class Kernel extends ConsoleKernel
         })->name('botusers')->withoutOverlapping();
 
         $schedule->call(function () {
+           $r2 = new Botusers_v2();
+           $r2->start();
+
+        })->name('Botusers_v2');
+
+        $schedule->call(function () {
             BotsMessages::runner(MessageStatus::DELAY);
             BotsMessages::runner(MessageStatus::NODELAY);
             BotsMessages::runner(MessageStatus::REPLY);
@@ -64,54 +71,53 @@ class Kernel extends ConsoleKernel
 //            info('handler Queue SendMailToAdmin');
             SendMailToAdmin::dispatch()->onQueue("SendMailToAdmin");
         })->name('SendMailToAdmin')->withoutOverlapping();
-/**
-        #  PROD
-
-        $schedule->call(function () {
-//            Aibot::runner(MessageStatus::DELAY);
-//            info('handler Queue SendQuestionDelay');
-            Storage::append('myapp.log', date('H:i:s') . "handler Queue SendQuestionDelay");
-
-            SendQuestionDelay::dispatch()->onQueue("model_free_one");
-//            \Illuminate\Support\Facades\Bus::batch([
-//                new SendQuestionAi,
-//            ])->name("model_pay")->onQueue("model_pay")->allowFailures()
-//                ->dispatch();
-        })->name('controller_aibot_delay')->everyThirtySeconds();
-
-        $schedule->call(function () {
-//            Aibot::runner(MessageStatus::NODELAY);
-//            info('handler Queue SendQuestionNoDelay');
-            Storage::append('myapp.log', date('H:i:s') . "handler Queue SendQuestionNoDelay");
-            SendQuestionNoDelay::dispatch()->onQueue("model_pay_one");
-//            \Illuminate\Support\Facades\Bus::batch([
-//                new SendQuestionAiDelay(),
-//            ])->name("model_pay2")->onQueue("model_pay2")->allowFailures()
-//                ->dispatch();
-        })->name('controller_aibot_nodelay')->everyTwoSeconds();
-
-
-        $schedule->call(function () {
-//            info('handler Queue tm_updates');
-            Storage::append('myapp.log', date('H:i:s') . "handler Queue tm_updates");
-          #  only ones to be run. there is a loop inside method of updates
-            TmUpdates::dispatch()->onQueue("TmUpdates");
-
-        })->name('controller_botusers')->withoutOverlapping()->everyTwoSeconds();
-
-        #  only ones to be run. there is a for-loop call runner within handle()
-        $schedule->call(function () {
-//            info('handler Queue job Botmessages');
-            Storage::append('myapp.log', date('H:i:s') . "handler Queue job Botmessages");
-            SendAnswerAiUsers::dispatch()->onQueue("SendAnswerAiUsers");
-        })->name('controller_botmessages')->withoutOverlapping()->everyTwoSeconds();
-
-$schedule->call(function () {
-//            info('handler Queue SendMailToAdmin');
-SendMailToAdmin::dispatch()->onQueue("SendMailToAdmin");
-})->name('controller_SendMailToAdmin')->withoutOverlapping()->everyMinute();
-
-*/
+        /**
+         * #  PROD
+         *
+         * $schedule->call(function () {
+         * //            Aibot::runner(MessageStatus::DELAY);
+         * //            info('handler Queue SendQuestionDelay');
+         * Storage::append('myapp.log', date('H:i:s') . "handler Queue SendQuestionDelay");
+         *
+         * SendQuestionDelay::dispatch()->onQueue("model_free_one");
+         * //            \Illuminate\Support\Facades\Bus::batch([
+         * //                new SendQuestionAi,
+         * //            ])->name("model_pay")->onQueue("model_pay")->allowFailures()
+         * //                ->dispatch();
+         * })->name('controller_aibot_delay')->everyThirtySeconds();
+         *
+         * $schedule->call(function () {
+         * //            Aibot::runner(MessageStatus::NODELAY);
+         * //            info('handler Queue SendQuestionNoDelay');
+         * Storage::append('myapp.log', date('H:i:s') . "handler Queue SendQuestionNoDelay");
+         * SendQuestionNoDelay::dispatch()->onQueue("model_pay_one");
+         * //            \Illuminate\Support\Facades\Bus::batch([
+         * //                new SendQuestionAiDelay(),
+         * //            ])->name("model_pay2")->onQueue("model_pay2")->allowFailures()
+         * //                ->dispatch();
+         * })->name('controller_aibot_nodelay')->everyTwoSeconds();
+         *
+         *
+         * $schedule->call(function () {
+         * //            info('handler Queue tm_updates');
+         * Storage::append('myapp.log', date('H:i:s') . "handler Queue tm_updates");
+         * #  only ones to be run. there is a loop inside method of updates
+         * TmUpdates::dispatch()->onQueue("TmUpdates");
+         *
+         * })->name('controller_botusers')->withoutOverlapping()->everyTwoSeconds();
+         *
+         * #  only ones to be run. there is a for-loop call runner within handle()
+         * $schedule->call(function () {
+         * //            info('handler Queue job Botmessages');
+         * Storage::append('myapp.log', date('H:i:s') . "handler Queue job Botmessages");
+         * SendAnswerAiUsers::dispatch()->onQueue("SendAnswerAiUsers");
+         * })->name('controller_botmessages')->withoutOverlapping()->everyTwoSeconds();
+         *
+         * $schedule->call(function () {
+         * //            info('handler Queue SendMailToAdmin');
+         * SendMailToAdmin::dispatch()->onQueue("SendMailToAdmin");
+         * })->name('controller_SendMailToAdmin')->withoutOverlapping()->everyMinute();
+         */
 
         #  END PROD
 

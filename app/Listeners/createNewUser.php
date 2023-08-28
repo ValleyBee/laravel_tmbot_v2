@@ -2,12 +2,12 @@
 
 namespace App\Listeners;
 
-use App\Events\LoginHistory;
+use App\Events\NewUser;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Log;
 
-class storeUserLoginHistory
+class createNewUser
 {
     /**
      * Create the event listener.
@@ -20,12 +20,13 @@ class storeUserLoginHistory
     /**
      * Handle the event.
      */
-    public function handle(LoginHistory $event): void
+    public function handle(NewUser $event): void
     {
-      $info = $event->str;
-        Log::channel('stderr')->notice("Listener LoginHistory START");
+      $info = $event->repsonse;
 
-        Log::channel('stderr')->notice("variable str from Event: ".$info);
+        Log::channel('stderr')->notice("Listener createNewUser START,arg: ",[$info]);
+
+
 
 
     }

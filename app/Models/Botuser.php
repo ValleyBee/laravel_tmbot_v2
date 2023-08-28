@@ -192,7 +192,7 @@ class Botuser extends Model
 
     public function getUser(int $id): stdClass
     {
-        // echo ('GetUSER');
+
         (object)$user_found = null;
         if ($this->botUserModel === null) {
             $this->botUserModel = app('botuser');
@@ -228,12 +228,15 @@ class Botuser extends Model
 
     public function findByBotuser_id(int $botuser_id): stdClass|null
     {
-        (object)$user_found = null;
-        if ($this->botUserModel === null) {
-            $this->botUserModel = app('botuser');
-        }
+        echo ('ID: '.$botuser_id);
+
+//        if ($this->botUserModel === null) {
+//            $this->botUserModel = app('botuser');
+//        }
         try {
-            (object)$user_found = $this->botUserModel->where(
+
+            //$this->botUserModel
+            $this->botUserModel= $this->where(
                 'botuser_id',
                 $botuser_id
             )->select(
@@ -246,22 +249,22 @@ class Botuser extends Model
                 'limit_req_num',
                 'lang'
             )->first();
+
         } catch (QueryException $e) {
             echo $e;
         }
 
-        if (is_null($user_found)) {
+        if (is_null($this->botUserModel)) {
 
             Log::info( "USER NOT FOUND findByBotuser_id");
 //			return abort(404);
-            return $user_found;
+            return $this->botUserModel;
         }
         // echo "<pre>";
         // echo "USER FOUND $user_found->id\n";
         // echo "</pre>";
-        // // $this->foundUserId = $user_found->id;
-        (object)$user_found = (object)$user_found->toArray();
-        return $user_found;
+
+        return (object)$this->botUserModel->toArray();
     }
 
 

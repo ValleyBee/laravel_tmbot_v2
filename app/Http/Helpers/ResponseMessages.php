@@ -3,6 +3,9 @@
 namespace App\Http\Helpers;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
+use Telegram\Bot\Objects\ResponseObject;
+use Telegram\Bot\Helpers as TmBotHelpers;
 
 class ResponseMessages
 {
@@ -38,27 +41,31 @@ class ResponseMessages
     }
 
 
-    public static function ResponseMessages(Collection $responseFromTmbot)
+    public static function ResponseMessages(ResponseObject $responseFromTmbot)
     {
 
-        $arg = "message";
+        $messageType = TmBotHelpers\Update::find($responseFromTmbot)->messageType();
+        $type = TmBotHelpers\Update::find($responseFromTmbot)->type();
+        Log::channel('stderr')->info('Message type:', [$type]);
 
-        # "EDITED MESSAGE";
-        if (isset($responseFromTmbot['edited_message'])) {
-            $arg = 'edited_message';
-echo  "EDITED MESSAGE";
+        switch ($type) {
+            case("message"):
+                $arg = "message";
+            case ("edited_message"):
+                $arg = "message";
+            case("callback_query"):
         }
+
+
         return new ResponseMessages(
-            $responseFromTmbot[$arg]['from']['id'] ?? 0,
-            $responseFromTmbot['update_id'] ?? 0,
-            $responseFromTmbot[$arg]['message_id'] ?? 0,
-            $responseFromTmbot[$arg]['from']['first_name'] ?? '',
-            $responseFromTmbot[$arg]['from']['last_name'] ?? '',
-            $responseFromTmbot[$arg]['text'] ?? ''
+            botuser_id: $responseFromTmbot[$arg]['from']['id'] ?? 0,
+            update_id: $responseFromTmbot['update_id'] ?? 0,
+            message_id: $responseFromTmbot[$arg]['message_id'] ?? 0,
+            first_name: $responseFromTmbot[$arg]['from']['first_name'] ?? '',
+            last_name: $responseFromTmbot[$arg]['from']['last_name'] ?? '',
+            content: $responseFromTmbot[$arg]['text'] ?? ''
 
         );
-
     }
-
 
 }

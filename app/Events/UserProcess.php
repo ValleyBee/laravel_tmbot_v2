@@ -11,19 +11,16 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 
-class LoginHistory
+class UserProcess
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $str;
-
+    public $response;
     /**
      * Create a new event instance.
      */
-    public function __construct(string $str)
-    {
-        $this->str = $str;
-        Log::channel('stderr')->notice("Event LoginHistory START");
+    public function __construct($response)
+    {  $this->response = $response;
     }
 
     /**

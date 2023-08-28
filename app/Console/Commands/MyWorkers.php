@@ -7,6 +7,8 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Process;
 
+
+
 class MyWorkers extends Command
 {
     private $run = true;
@@ -31,6 +33,7 @@ class MyWorkers extends Command
     {
         $received_command = $this->argument('my_arg');
         event(new LoginHistory("this string came from console command"));
+
         Log::channel('stderr')->info('Worker received command: ' . $received_command);
         if ($received_command == 'start') {
             $this->fire();

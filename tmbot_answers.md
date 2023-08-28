@@ -83,6 +83,7 @@ DATA - BUTTOM KEY OF MENU WAS PRESSED
       ]
 
 # BOT COMMAND
+
 1 => Telegram\Bot\Objects\ResponseObject^ {#2137
 #fields: Illuminate\Support\Collection^ {#2122
 #items: array:2 [

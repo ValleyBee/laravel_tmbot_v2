@@ -1,14 +1,20 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V2;
 
 
 use App\Enums\Messages\Status as MessageStatus;
 use App\Enums\Users\Status;
 use App\Enums\Users\Status as UsersStatus;
 use App\Enums\Users\UsersMenu;
+use App\Events\MessageProcess;
+use App\Events\UserProcess;
+use App\Http\Controllers\Controller;
+use App\Http\Controllers\StarterMethods;
+use App\Http\Controllers\UserProfile;
 use App\Http\Helpers\ResponseMessages;
 use App\Http\Helpers\ResponseCallBackQueryMessages;
+use App\Listeners\MessageHandler;
 use App\Models\Botmessages as BotMessageModel;
 use App\Models\Botuser as BotUserModel;
 use App\Models\NewUsers;
@@ -60,7 +66,7 @@ class Botusers extends Controller
     protected ?stdClass $stdClassMsg = null;
     protected ?ResponseMessages $responseMessages = null;
     protected ?ResponseCallBackQueryMessages $responseCallBackQueryMessages = null;
-    protected ResponseObject $responseFromTmbot;
+    protected FakeResponse $responseFromTmbot;
 
     protected ?stdClass $stdClassUser = null;
 
@@ -192,37 +198,35 @@ class Botusers extends Controller
              */
 
 
-            (object)$responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates(['offset' => $getLastRecordUpdate_id->update_id]);
-exit();
+            (object)$responseFromTmbot = $this->telegram->bot($tmBotModel)->getUpdates(); // ['offset' => $getLastRecordUpdate_id->update_id]);
+
             $cnt = count($responseFromTmbot) - 1;
 
 
-
-
-            $commandHandler = new CommandHandler($this->telegram->bot($tmBotModel));
-
+            //$commandHandler = $this->telegram->bot($tmBotModel);
+//            $eventHandler = $this->telegram->getEventFactory();
 
 //            $commandHandler->processCommand($fakeResponseResult);
 
 
 
 
-            $listCommand = $commandHandler->getCommands();
+    //        $listCommand = $commandHandler->getCommands();
 
 
-            $this->telegram->bot($tmBotModel)->onUpdate('test1');
+//            $this->telegram->bot($tmBotModel)->onUpdate('test1');
 
             $user = FakePayload\Payload::create()->user();
             (array)$message = FakePayload\Payload::create()->message();
             (array)$update = FakePayload\Payload::create()->update();
 
-            $fakeResponseResult = Helpers\Update::find($responseFromTmbot[0])->message();
+    //        $fakeResponseResult = Helpers\Update::find($responseFromTmbot[$cnt])->message();
 
 
             $fakeResponseResult =new FakePayload\PayloadFactory('generate');
-            $fakeResponseResult->user($user);
-            var_dump($fakeResponseResult,$cnt);
-            exit();
+
+
+
 //            $fakeResponse = array_merge($update,$message);
 
 
@@ -247,7 +251,7 @@ exit();
 
 
 //            $this->responseFromTmbot =
-            $resultFake = ResponseObject::factory()->faker();
+//            $resultFake = FakeResponse::factory()->faker();
 //            $this->responseFromTmbot::factory();
 //            Log::channel('stderr')->info('responseFromTmbot',[$resultFake]);
 
@@ -257,37 +261,27 @@ exit();
             );
 
 
-            $cnt = count($responseFromTmbot) - 1;
-            for ($y = $cnt; $y >= 0; $y--) {
-                $result1 = Helpers\Update::find($responseFromTmbot[$cnt])->messageType();
-                $result2 = Helpers\Update::find($responseFromTmbot[$cnt])->type();
+//            $cnt = count($responseFromTmbot) - 1;
 
 
-                $result_UpdateEvent = new Events\UpdateEvent($this->telegram->bot($tmBotModel), $responseFromTmbot[$cnt]);
+
+                // Message type: ["text","message"]
+                //Message type: ["text","edited_message"]
+
+//                $result_UpdateEvent = new Events\UpdateEvent($this->telegram->bot($tmBotModel), $responseFromTmbot[$cnt]);
 //                var_dump($result_UpdateEvent->update);
-                $result_Listener = new Listeners\ProcessCommand();
+//                $result_Listener = new Listeners\ProcessCommand();
 
 //                $result_Listener->handle($result_UpdateEvent);
-                $responseFromTmbot_2[$cnt] = $responseFromTmbot[$cnt]->withCustomData($responseFromTmbot[$cnt]['entities'],['entities' => ['type' => ['bot_command']]]);
+//                $responseFromTmbot_2[$cnt] = $responseFromTmbot[$cnt]->withCustomData($responseFromTmbot[$cnt]['entities'],['entities' => ['type' => ['bot_command']]]);
 
-                $commandHandler->processCommand($fakeResponseResult[$cnt]);
+//                $commandHandler->processCommand($fakeResponseResult[$cnt]);
 
 
-                Log::channel('stderr')->info('Message type:', [$result1, $result2]);
 
-                switch ($result2) {
-                    case("callback_query"):
 
-                        break;
-                    case("message"):
-//                        Log::channel('stderr')->warning('responseFromTmbot', [$responseFromTmbot[$cnt]]);
 
-//                        $commandBus->execute('second', $fakeResponseResult, [], true);
-//                        $triggerClass->triggerCommand('/second', []);
-                        break;
-                }
-
-                $commandBus->execute('second', $responseFromTmbot_2[$cnt], [], true);
+//                $commandBus->execute('second', $responseFromTmbot_2[$cnt], [], true);
 
                 //                //function (){
 //                    Log::channel('stderr')->info('responseFromTmbot',['CLOSURE']);
@@ -301,11 +295,11 @@ exit();
 //                $command->execute('first',$responseFromTmbot[$cnt],[]);
 
 //                                var_dump($result);
-                var_dump($responseFromTmbot_2[$cnt]);
-            }
 
-            exit();
-            $this->telegram->bot($tmBotModel)->onUpdate('first');
+
+
+
+//            $this->telegram->bot($tmBotModel)->onUpdate('first');
 
             /**
              * $updates = new Update($responseFromTmbot[0]);
@@ -326,23 +320,24 @@ exit();
         }
         echo "\n";
 //         dd(config()->get('botsmanagerconf.ENG.REPLYMARKUP_MENU_SUB_ONE'));
-        $cnt = count($responseFromTmbot) - 1;
+
         Log::info('Botusers, total messages from updates' . $cnt);
         Log::channel('stderr')->info("Botusers, total messages from updates");
 //        echo date("d/m/Y H:i:s") . " " . "total messages count: " . $cnt;
         echo "\n";
 
-
+        $cnt = count($responseFromTmbot) - 1;
         for ($y = $cnt; $y >= 0; $y--) {
+
+
+
             if ($responseFromTmbot[$cnt]->__isset('callback_query')) {
                 # BOT COMMAND
-
                 // (isset($responseFromTmbot[$cnt]['callback_query'])) # old way
 //              $userFound = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
                 $answerCallbackQuery = false;
                 $this->stdClassUser = $this->botUserModel->findByBotuser_id($responseFromTmbot[$cnt]['callback_query']['from']['id'] ?? 0);
                 $this->responseCallBackQueryMessages = ResponseCallBackQueryMessages::ResponseCallBackQueryMessages($responseFromTmbot[$cnt]->collect());
-
                 /**
                  * $callback_query = new stdClass();
                  * $callback_query->id = ($responseFromTmbot[$cnt]['callback_query']['id'] ?? 0);
@@ -383,6 +378,7 @@ exit();
                 continue;
             } # end if callback_query
 
+
             if (isset($responseFromTmbot[$cnt]['my_chat_member'])) {
                 //            update_id: 785629015
                 //    my_chat_member: array:5 [▼
@@ -407,8 +403,13 @@ exit();
             }
 
             if ($responseFromTmbot[$cnt]->__isset('message') or 'edited_message') {
-                $this->responseMessages = ResponseMessages::ResponseMessages($responseFromTmbot[$cnt]->collect());
-                $this->stdClassUser = $this->botUserModel->findByBotuser_id($this->responseMessages->botuser_id);
+
+
+                $this->responseMessages = ResponseMessages::ResponseMessages($responseFromTmbot[$cnt]);
+
+dd($this->responseMessages);
+
+//                $this->stdClassUser = $this->botUserModel->findByBotuser_id($this->responseMessages->botuser_id);
 
                 //VALIDATE USER
 
